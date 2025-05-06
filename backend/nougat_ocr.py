@@ -3,7 +3,6 @@ from transformers import AutoProcessor, VisionEncoderDecoderModel
 from pdf2image import convert_from_path
 from PIL import Image
 
-# Load processor and model
 processor = AutoProcessor.from_pretrained("facebook/nougat-base")
 model = VisionEncoderDecoderModel.from_pretrained("facebook/nougat-base").eval()
 
