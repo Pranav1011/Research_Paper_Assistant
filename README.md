@@ -26,4 +26,37 @@ A local RAG pipeline for parsing, indexing, and querying academic PDFs — power
 
 ---
 
-## 🗂️ File Structure
+
+## 🛠️ Setup
+bash
+# Clone repo
+git clone https://github.com/yourname/research_paper_assistant
+cd research_paper_assistant
+
+# Set up Python environment
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Install MinerU
+pip install -U "magic-pdf[full]"
+pip install huggingface_hub
+python download_models_hf.py
+
+---
+
+🧪 Run MinerU Parsing
+magic-pdf -p data/papers/ -o data/mineru_parsed/
+
+---
+
+✅ Next Up: Phase 5 — Chunking + Embedding
+
+Stay tuned! We’ll process the structured JSONs into semantic chunks for retrieval.
+
+---
+
+
+💻 Local-Only Focus
+
+This app is designed for private use — no cloud APIs required.
