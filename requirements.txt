@@ -4,3 +4,5 @@ python-dotenv
 PyMuPDF
 torch
 transformers
+pdf2image
+pdfplumber

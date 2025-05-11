@@ -1,8 +1,8 @@
 import json
 from pathlib import Path
-from layout_parser import extract_layout_elements
+from backend.layout_parser import extract_layout_elements
 
-EXPORT_DIR = Path("data/parsed")
+EXPORT_DIR = Path("data/manual_parsed")
 
 def sanitize_filename(name):
     return name.replace("?", "").replace(":", "").replace("/", "_")
@@ -12,7 +12,7 @@ def verify_and_export():
     EXPORT_DIR.mkdir(parents=True, exist_ok=True)
 
     pdfs = list(papers_dir.glob("*.pdf"))
-    print(f"🔍 Found {len(pdfs)} PDFs to validate")
+    print(f" Found {len(pdfs)} PDFs to validate")
 
     for pdf in pdfs:
         print(f"\n Verifying: {pdf.name}")

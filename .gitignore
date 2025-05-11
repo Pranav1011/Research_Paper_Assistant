@@ -1,7 +1,36 @@
-venv/
+# Python
 __pycache__/
-.env
-*.pdf
-vectorstore/
-arixiv_downloader.py
-test_pdf_reader.py
+*.py[cod]
+*.egg-info/
+*.log
+
+# Virtual environments
+venv/
+.env/
+
+# Jupyter & VSCode
+.ipynb_checkpoints/
+.vscode/
+.DS_Store
+
+# PDF / parsed data
+data
+data/papers/
+data/manual_parsed/
+data/mineru_parsed/
+data/faiss_indexes/
+
+# HuggingFace model downloads
+~/.cache/huggingface/
+magic-pdf.json
+download_models_hf.py
+
+# MinerU outputs
+*.md
+*.layout.pdf
+*.spans.pdf
+*.origin.pdf
+/images/
+
+# PyMuPDF warnings
+*.xhtml
