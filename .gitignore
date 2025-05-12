@@ -34,3 +34,6 @@ download_models_hf.py
 
 # PyMuPDF warnings
 *.xhtml
+
+# python filea
+debug_mineru_json.py
