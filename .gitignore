@@ -15,10 +15,6 @@ venv/
 
 # PDF / parsed data
 data
-data/papers/
-data/manual_parsed/
-data/mineru_parsed/
-data/faiss_indexes/
 
 # HuggingFace model downloads
 ~/.cache/huggingface/

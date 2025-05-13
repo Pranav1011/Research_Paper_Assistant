@@ -1,0 +1,863 @@
+{
+  "timestamp": "2025-05-13T13:59:58.464615",
+  "metrics": {
+    "1": {
+      "section_match_rate": 0.0,
+      "mean_faiss_score": 1.0,
+      "mean_bm25_score": 0.0,
+      "mean_combined_score": 0.4148837609160182,
+      "mean_reranker_score": 0.0047675218320364365
+    },
+    "3": {
+      "section_match_rate": 0.0,
+      "mean_faiss_score": 1.0,
+      "mean_bm25_score": 0.0,
+      "mean_combined_score": 0.4227730812888391,
+      "mean_reranker_score": 0.02054616257767824
+    },
+    "5": {
+      "section_match_rate": 0.05,
+      "mean_faiss_score": 1.0,
+      "mean_bm25_score": 0.0,
+      "mean_combined_score": 0.43164213153686437,
+      "mean_reranker_score": 0.03828426307372865
+    },
+    "10": {
+      "section_match_rate": 0.025,
+      "mean_faiss_score": 1.0,
+      "mean_bm25_score": 0.0,
+      "mean_combined_score": 0.3895178861575077,
+      "mean_reranker_score": 0.019285772315015492
+    }
+  },
+  "queries": [
+    {
+      "query": "How do the models perform in terms of accuracy?",
+      "category": "performance",
+      "expected_sections": [
+        "Results",
+        "Evaluation",
+        "Performance"
+      ],
+      "k_values": {
+        "1": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.42746975606307386,
+            "mean_reranker_score": 0.014939512126147747
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.42746975606307386,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "3": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.43824567063401143,
+            "mean_reranker_score": 0.03649134126802286
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.42746975606307386,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4256705153547227,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.46159674048423766,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "5": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4383051746338606,
+            "mean_reranker_score": 0.03661034926772118
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.42746975606307386,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4256705153547227,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.46159674048423766,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.44472207881510256,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.43206678245216606,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "10": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.39424513040445164,
+            "mean_reranker_score": 0.01849026080890326
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.42746975606307386,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4256705153547227,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.46159674048423766,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.44472207881510256,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.43206678245216606,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "G. P. B. and M. Y. acknowledge the Institute for Theoretical Physics, Heidelberg University, for the very kind hospitality during their stay. The work of G. P. B. and A. E. was supported by the resear...",
+              "section_title": "ACKNOWLEDGMENTS",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35009523689368505,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we employ the Litim-type cutoff function [118]  \n\n$$\n\\begin{array} { r } { \\mathcal { R } _ { k } ( p ) = \\left\\{ \\begin{array} { l l } { p ^ { 2 } \\left( \\displaystyle \\frac { k ^ { 2 }...",
+              "section_title": "1. Choice of regulator in the functional Renormalization Group",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35004257996261,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Gustavo P. de Brito $\\circledcirc$ ,1, \u2217 Astrid Eichhorn $\\circledcirc$ ,2, \u2020 Antonio D. Pereira $\\circledcirc$ ,3, \u2021 and Masatoshi Yamada $\\oplus 4 , \\ S$ $^ 1$ Departamento de F\u00b4\u0131sica, Universidade ...",
+              "section_title": "Neutrino mass generation in asymptotically safe gravity",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.350172369153006,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is another option for neutrino masses, namely that the Majorana mass of the right-handed neutrinos is very small compared to the Dirac mass [106\u2013108]. In such a case, the eigenvalues (4) of the ...",
+              "section_title": "VI. CAN NEUTRINOS BE PSEUDO-DIRAC NEUTRINOS IN ASYMPTOTIC SAFETY?",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35059621239779515,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We have just shown that an asymptotically safe theory must contain new degrees of freedom beyond the SM to account for neutrino masses. The arguably most popular way to endow neutrinos with masses is ...",
+              "section_title": "V. CAN NEUTRINO MASSES ARISE FROM A TYPE-I SEESAW MECHANISM IN ASYMPTOTIC SAFETY?",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35001903246811705,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "What is the architecture of the system?",
+      "category": "architecture",
+      "expected_sections": [
+        "Method",
+        "Architecture",
+        "System Design"
+      ],
+      "k_values": {
+        "1": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4204815336142201,
+            "mean_reranker_score": 0.0009630672284401953
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.4204815336142201,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "3": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.42146473647752525,
+            "mean_reranker_score": 0.0029294729550504903
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.4204815336142201,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200186529196071,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Model Architecture. GENMO comprises 16 layers, each consisting of a ROPE-based Transformer block followed by a multi-text injection block. The ROPE-based Transformer block incorporates a LayerNorm, a ...",
+              "section_title": "A. Implementation Details",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4238940228987485,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "5": {
+          "metrics": {
+            "section_match_rate": 0.2,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4208979199861642,
+            "mean_reranker_score": 0.0017958399723283947
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.4204815336142201,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200186529196071,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Model Architecture. GENMO comprises 16 layers, each consisting of a ROPE-based Transformer block followed by a multi-text injection block. The ROPE-based Transformer block incorporates a LayerNorm, a ...",
+              "section_title": "A. Implementation Details",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4238940228987485,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200735309658921,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200218595323531,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "10": {
+          "metrics": {
+            "section_match_rate": 0.1,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.3924586046856275,
+            "mean_reranker_score": 0.0009172093712550122
+          },
+          "results": [
+            {
+              "text": "Figure 4 compares models by visualizing their prediction accuracy (MAE), inference time, and model complexity. We found that while the model size influences predictive accuracy and inference time, it ...",
+              "section_title": "RQ4: How do models perform with different model sizes?",
+              "source_file": "2505.01415v1.How_Effective_are_Large_Time_Series_Models_in_Hydrology?_A_Study_on_Water_Level_.md",
+              "score": 0.4204815336142201,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200186529196071,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Model Architecture. GENMO comprises 16 layers, each consisting of a ROPE-based Transformer block followed by a multi-text injection block. The ROPE-based Transformer block incorporates a LayerNorm, a ...",
+              "section_title": "A. Implementation Details",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4238940228987485,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200735309658921,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200218595323531,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200186484376172,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "G. P. B. and M. Y. acknowledge the Institute for Theoretical Physics, Heidelberg University, for the very kind hospitality during their stay. The work of G. P. B. and A. E. was supported by the resear...",
+              "section_title": "ACKNOWLEDGMENTS",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35001865363083196,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we employ the Litim-type cutoff function [118]  \n\n$$\n\\begin{array} { r } { \\mathcal { R } _ { k } ( p ) = \\left\\{ \\begin{array} { l l } { p ^ { 2 } \\left( \\displaystyle \\frac { k ^ { 2 }...",
+              "section_title": "1. Choice of regulator in the functional Renormalization Group",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35001865412923505,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Gustavo P. de Brito $\\circledcirc$ ,1, \u2217 Astrid Eichhorn $\\circledcirc$ ,2, \u2020 Antonio D. Pereira $\\circledcirc$ ,3, \u2021 and Masatoshi Yamada $\\oplus 4 , \\ S$ $^ 1$ Departamento de F\u00b4\u0131sica, Universidade ...",
+              "section_title": "Neutrino mass generation in asymptotically safe gravity",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35002183773722206,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is another option for neutrino masses, namely that the Majorana mass of the right-handed neutrinos is very small compared to the Dirac mass [106\u2013108]. In such a case, the eigenvalues (4) of the ...",
+              "section_title": "VI. CAN NEUTRINOS BE PSEUDO-DIRAC NEUTRINOS IN ASYMPTOTIC SAFETY?",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.3500186529905477,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "What are the main limitations of the approach?",
+      "category": "limitations",
+      "expected_sections": [
+        "Limitations",
+        "Discussion",
+        "Future Work"
+      ],
+      "k_values": {
+        "1": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4200331081864715,
+            "mean_reranker_score": 6.621637294301763e-05
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200331081864715,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "3": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.42929753322634495,
+            "mean_reranker_score": 0.018595066452689935
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200331081864715,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.44784084901213644,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4200186424804269,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "5": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4259154563074117,
+            "mean_reranker_score": 0.01183091261482332
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200331081864715,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.44784084901213644,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4200186424804269,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4216620628302917,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200226190277317,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "10": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.3879769905409921,
+            "mean_reranker_score": 0.0059539810819842385
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200331081864715,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.44784084901213644,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.4200186424804269,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4216620628302917,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.4200226190277317,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "G. P. B. and M. Y. acknowledge the Institute for Theoretical Physics, Heidelberg University, for the very kind hospitality during their stay. The work of G. P. B. and A. E. was supported by the resear...",
+              "section_title": "ACKNOWLEDGMENTS",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.350018643493604,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we employ the Litim-type cutoff function [118]  \n\n$$\n\\begin{array} { r } { \\mathcal { R } _ { k } ( p ) = \\left\\{ \\begin{array} { l l } { p ^ { 2 } \\left( \\displaystyle \\frac { k ^ { 2 }...",
+              "section_title": "1. Choice of regulator in the functional Renormalization Group",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.3500186464276339,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Gustavo P. de Brito $\\circledcirc$ ,1, \u2217 Astrid Eichhorn $\\circledcirc$ ,2, \u2020 Antonio D. Pereira $\\circledcirc$ ,3, \u2021 and Masatoshi Yamada $\\oplus 4 , \\ S$ $^ 1$ Departamento de F\u00b4\u0131sica, Universidade ...",
+              "section_title": "Neutrino mass generation in asymptotically safe gravity",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35006980485341044,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is another option for neutrino masses, namely that the Majorana mass of the right-handed neutrinos is very small compared to the Dirac mass [106\u2013108]. In such a case, the eigenvalues (4) of the ...",
+              "section_title": "VI. CAN NEUTRINOS BE PSEUDO-DIRAC NEUTRINOS IN ASYMPTOTIC SAFETY?",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.35002020732608796,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "To provide an in-depth assessment of microstructure prediction in metal additive manufacturing, a structured literature review is conducted, focusing on ML approaches, with particular emphasis on PIML...",
+              "section_title": "1.3 Paper Structure",
+              "source_file": "2505.01424v1.Computational,_Data-Driven,_and_Physics-Informed_Machine_Learning_Approaches_for.md",
+              "score": 0.35006532177212646,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "query": "How does the method compare to previous work?",
+      "category": "comparison",
+      "expected_sections": [
+        "Related Work",
+        "Comparison",
+        "Results"
+      ],
+      "k_values": {
+        "1": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.39155064580030735,
+            "mean_reranker_score": 0.003101291600614786
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39155064580030735,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "3": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.4020843848174748,
+            "mean_reranker_score": 0.024168769634949665
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39155064580030735,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.42378516435623165,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.39091734429588537,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "5": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.44144997522002083,
+            "mean_reranker_score": 0.10289995044004172
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39155064580030735,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.42378516435623165,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.39091734429588537,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.6076550179719924,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39334170367568727,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        },
+        "10": {
+          "metrics": {
+            "section_match_rate": 0.0,
+            "mean_faiss_score": 1.0,
+            "mean_bm25_score": 0.0,
+            "mean_combined_score": 0.38339081899895966,
+            "mean_reranker_score": 0.05178163799791946
+          },
+          "results": [
+            {
+              "text": "We make the following ansatz for the effective action:  \n\n$$\n\\Gamma _ { k } = \\Gamma _ { k } ^ { \\mathrm { S M } } + \\Gamma _ { k } ^ { \\mathrm { g r a v } } + \\Gamma _ { k } ^ { \\nu } .\n$$  \n\nFor the...",
+              "section_title": "2. General truncation for gravity-matter systems",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39155064580030735,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is an interaction which endows neutrinos with mass without introducing degrees of freedom beyond the SM. This is the Weinberg operator [69, 70], a dimensionfive operator built purely out of the ...",
+              "section_title": "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.42378516435623165,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "GENMO unifies motion estimation and generation by formulating both tasks as conditional motion generation. Specifically, it synthesizes a human motion sequence $x$ of length $N$ based on a set of cond...",
+              "section_title": "3. Generalist Model for Human Motion",
+              "source_file": "2505.01425v1.GENMO:_A_GENeralist_Model_for_Human_MOtion.md",
+              "score": 0.39091734429588537,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we utilize the Wetterich equation [62\u2013 64], reviewed in [65] to obtain the beta functions $\\beta _ { g _ { i } } =$ $k \\partial _ { k } g _ { i } ( k )$ for the dimensionless couplings i...",
+              "section_title": "III. METHODOLOGY",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.6076550179719924,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "By invoking truncations in the solution of the RG equations, we generate systematic uncertainties in our results. It is crucial to assess these to test the robustness of our conclusions. One possibili...",
+              "section_title": "3. Study of systematic uncertainties",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.39334170367568727,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "G. P. B. and M. Y. acknowledge the Institute for Theoretical Physics, Heidelberg University, for the very kind hospitality during their stay. The work of G. P. B. and A. E. was supported by the resear...",
+              "section_title": "ACKNOWLEDGMENTS",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.3250510660029249,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "In this work, we employ the Litim-type cutoff function [118]  \n\n$$\n\\begin{array} { r } { \\mathcal { R } _ { k } ( p ) = \\left\\{ \\begin{array} { l l } { p ^ { 2 } \\left( \\displaystyle \\frac { k ^ { 2 }...",
+              "section_title": "1. Choice of regulator in the functional Renormalization Group",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.32506098887388357,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "Gustavo P. de Brito $\\circledcirc$ ,1, \u2217 Astrid Eichhorn $\\circledcirc$ ,2, \u2020 Antonio D. Pereira $\\circledcirc$ ,3, \u2021 and Masatoshi Yamada $\\oplus 4 , \\ S$ $^ 1$ Departamento de F\u00b4\u0131sica, Universidade ...",
+              "section_title": "Neutrino mass generation in asymptotically safe gravity",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.3250437295566371,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "The current active area of development involves modifications to the baseline PINN framework. Ongoing research includes the use of adaptive activation functions to improve learning performance and con...",
+              "section_title": "5.4 PINNs: Current Status and Future Directions",
+              "source_file": "2505.01424v1.Computational,_Data-Driven,_and_Physics-Informed_Machine_Learning_Approaches_for.md",
+              "score": 0.32625584704801436,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            },
+            {
+              "text": "There is another option for neutrino masses, namely that the Majorana mass of the right-handed neutrinos is very small compared to the Dirac mass [106\u2013108]. In such a case, the eigenvalues (4) of the ...",
+              "section_title": "VI. CAN NEUTRINOS BE PSEUDO-DIRAC NEUTRINOS IN ASYMPTOTIC SAFETY?",
+              "source_file": "2505.01422v1.Neutrino_mass_generation_in_asymptotically_safe_gravity.md",
+              "score": 0.3252466824080329,
+              "faiss_score": 1.0,
+              "bm25_score": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

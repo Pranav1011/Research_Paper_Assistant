@@ -9,14 +9,27 @@ CHUNK_DIR.mkdir(parents=True, exist_ok=True)
 def split_md_by_sections(md_text):
     """Splits markdown text into sections based on headings."""
     chunks = []
-    current_chunk = {"title": None, "content": []}
+    current_chunk = {
+        "title": None,
+        "section_title": None,
+        "content": []
+    }
+    current_section = None
 
     for line in md_text.split("\n"):
         if line.startswith("#"):
             # Save current chunk if it has content
             if current_chunk["content"]:
                 chunks.append(current_chunk)
-                current_chunk = {"title": None, "content": []}
+                current_chunk = {
+                    "title": None,
+                    "section_title": current_section,
+                    "content": []
+                }
+            
+            # Update section title for any header level (#, ##, ###)
+            current_section = line.strip("#").strip()
+            current_chunk["section_title"] = current_section
             current_chunk["title"] = line.strip()
         else:
             current_chunk["content"].append(line)
@@ -25,13 +38,17 @@ def split_md_by_sections(md_text):
         chunks.append(current_chunk)
 
     # Final cleanup
-        cleaned_chunks = []
+    cleaned_chunks = []
     for chunk in chunks:
         text = "\n".join(chunk["content"]).strip()
         if text:
             cleaned_chunks.append({
                 "title": chunk["title"],
-                "text": text
+                "section_title": chunk["section_title"],
+                "text": text,
+                "language": "en",  # Default to English
+                "is_english": True,  # Default to English
+                "length": len(text)
             })
     return cleaned_chunks
 

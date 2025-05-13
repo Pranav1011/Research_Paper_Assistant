@@ -6,3 +6,8 @@ torch
 transformers
 pdf2image
 pdfplumber
+sentence-transformers
+faiss-cpu
+rank-bm25
+numpy
+nltk

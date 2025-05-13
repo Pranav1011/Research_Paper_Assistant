@@ -4,15 +4,16 @@ import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from pathlib import Path
+from vectorstore.hybrid_retriever import HybridRetriever
 
 # --- Config ---
-INDEX_DIR = Path("data/faiss_indexes")
-CHUNKS_DIR = Path("data/chunks")
+INDEX_DIR = Path("faiss_index")
+CHUNKS_DIR = Path("data/final_chunks")
 EMBED_MODEL = "all-MiniLM-L6-v2"
 TOP_K = 3
 
 def load_chunks(file_id):
-    path = CHUNKS_DIR / f"{file_id}_chunks.json"
+    path = CHUNKS_DIR / f"{file_id}_final.json"
     with open(path, "r") as f:
         return json.load(f)
 
@@ -51,3 +52,20 @@ if __name__ == "__main__":
         for i, r in enumerate(results, 1):
             print(f"\nResult {i}:")
             print(r["text"])
+
+# Initialize retriever
+retriever = HybridRetriever(
+    faiss_index_dir="vectorstore/faiss_index",
+    chunks_dir="data/final_chunks",
+    use_reranker=True,
+    section_boost=1.2  # Boost score by 20% for important sections
+)
+
+# Search with optional metadata filters
+results = retriever.retrieve(
+    query="How do the models perform?",
+    k=5,
+    metadata_filters={
+        'section_title': 'Results'  # Optional: filter by section
+    }
+)
