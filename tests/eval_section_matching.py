@@ -7,6 +7,8 @@ from typing import List, Dict
 import numpy as np
 from collections import defaultdict
 import matplotlib.pyplot as plt
+import re
+from rapidfuzz import fuzz
 
 # Add the parent directory to Python path
 sys.path.append(str(Path(__file__).parent.parent))
@@ -20,45 +22,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def normalize_section(title: str) -> str:
+    return title.strip().lower()
+
+def normalize_header(header: str) -> str:
+    # Remove leading numbers, punctuation, and lower the case
+    header = header.strip().lower()
+    header = re.sub(r'^[\d.\-\s]+', '', header)  # Remove leading numbers and dots
+    header = re.sub(r'[^a-z0-9\s]', '', header)   # Remove non-alphanumeric except space
+    return header
+
+def fuzzy_section_match(expected: str, candidate: str, threshold: int = 80) -> bool:
+    # Normalize both
+    norm_expected = normalize_header(expected)
+    norm_candidate = normalize_header(candidate)
+    # Accept prefix match
+    if norm_candidate.startswith(norm_expected):
+        return True
+    # Fuzzy match
+    score = fuzz.token_set_ratio(norm_expected, norm_candidate)
+    return score >= threshold
+
 def load_test_queries() -> List[Dict]:
-    """Load test queries with their ground truth section titles."""
-    return [
-        {
-            "query": "How do the models perform in terms of accuracy?",
-            "expected_sections": [
-                "RQ4: How do models perform with different model sizes?",
-                "4 Results",
-                "3. Study of systematic uncertainties"
-            ]
-        },
-        {
-            "query": "What is the architecture of the system?",
-            "expected_sections": [
-                "A. Implementation Details",
-                "III. METHODOLOGY",
-                "2. General truncation for gravity-matter systems"
-            ]
-        },
-        {
-            "query": "What are the main limitations of the approach?",
-            "expected_sections": [
-                "3. Study of systematic uncertainties",
-                "IV. THE NECESSITY OF DEGREES OF FREEDOM BEYOND THE STANDARD MODEL IN ASYMPTOTIC SAFETY",
-                "2. General truncation for gravity-matter systems"
-            ]
-        },
-        {
-            "query": "How does the method compare to previous work?",
-            "expected_sections": [
-                "III. METHODOLOGY",
-                "2. General truncation for gravity-matter systems",
-                "3. Study of systematic uncertainties"
-            ]
-        }
-    ]
+    """Load paper-specific test queries from JSON file."""
+    with open('data/paper_specific_test_queries.json', 'r') as f:
+        return json.load(f)
 
 def evaluate_retrieval(retriever: HybridRetriever, queries: List[Dict], k: int = 5) -> Dict:
-    """Evaluate retrieval quality with focus on section matching."""
+    """Evaluate retrieval quality with focus on section matching and compute precision/recall."""
     metrics = {
         "section_match_rate": 0.0,
         "top_k_accuracy": defaultdict(list),
@@ -69,18 +60,23 @@ def evaluate_retrieval(retriever: HybridRetriever, queries: List[Dict], k: int =
             "final": []
         },
         "section_matches": defaultdict(int),
-        "total_queries": len(queries)
+        "total_queries": len(queries),
+        "true_positives": 0,
+        "false_positives": 0,
+        "false_negatives": 0
     }
     
     for query_data in queries:
         query = query_data["query"]
-        expected_sections = query_data["expected_sections"]
+        expected_section = query_data["expected_section"]
+        expected_norm = normalize_section(expected_section)
         
         # Get retrieval results
         results = retriever.retrieve(query, k=k, score_debug=True)
         
         # Track section matches
         section_matches = 0
+        found = False
         for i, result in enumerate(results):
             # Record scores
             metrics["score_distributions"]["faiss"].append(result["faiss_score"])
@@ -89,21 +85,30 @@ def evaluate_retrieval(retriever: HybridRetriever, queries: List[Dict], k: int =
                 metrics["score_distributions"]["reranker"].append(result["reranker_score"])
             metrics["score_distributions"]["final"].append(result["score"])
             
-            # Check section match
-            if result["section_title"] in expected_sections:
+            # Check section match (normalized)
+            result_norm = normalize_section(result["section_title"])
+            if fuzzy_section_match(expected_section, result["section_title"]):
                 section_matches += 1
+                found = True
                 metrics["section_matches"][result["section_title"]] += 1
                 metrics["top_k_accuracy"][i+1].append(1)
             else:
                 metrics["top_k_accuracy"][i+1].append(0)
+        
+        # Precision/Recall bookkeeping
+        if found:
+            metrics["true_positives"] += 1
+        else:
+            metrics["false_negatives"] += 1
+        metrics["false_positives"] += k - section_matches
         
         # Calculate section match rate for this query
         metrics["section_match_rate"] += section_matches / k
     
     # Average out the metrics
     metrics["section_match_rate"] /= len(queries)
-    for k in metrics["top_k_accuracy"]:
-        metrics["top_k_accuracy"][k] = np.mean(metrics["top_k_accuracy"][k])
+    for k_val in metrics["top_k_accuracy"]:
+        metrics["top_k_accuracy"][k_val] = np.mean(metrics["top_k_accuracy"][k_val])
     
     # Calculate score statistics
     for score_type in metrics["score_distributions"]:
@@ -116,6 +121,16 @@ def evaluate_retrieval(retriever: HybridRetriever, queries: List[Dict], k: int =
                 "max": np.max(scores)
             }
     
+    # Compute precision, recall, F1
+    tp = metrics["true_positives"]
+    fp = metrics["false_positives"]
+    fn = metrics["false_negatives"]
+    precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
+    recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+    metrics["precision"] = precision
+    metrics["recall"] = recall
+    metrics["f1"] = f1
     return metrics
 
 def plot_metrics(metrics: Dict, output_dir: Path):
@@ -166,6 +181,9 @@ def main():
     # Print results
     print("\n📊 Evaluation Results:")
     print(f"Section Match Rate: {metrics['section_match_rate']:.3f}")
+    print(f"Precision: {metrics['precision']:.3f}")
+    print(f"Recall: {metrics['recall']:.3f}")
+    print(f"F1 Score: {metrics['f1']:.3f}")
     print("\nTop-K Accuracy:")
     for k, acc in sorted(metrics["top_k_accuracy"].items()):
         print(f"  Top-{k}: {acc:.3f}")

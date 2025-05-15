@@ -1,6 +1,6 @@
 # 🧠 Research Paper Assistant (with MinerU)
 
-A local RAG pipeline for parsing, indexing, and querying academic PDFs — powered by LLMs, FAISS, and MinerU.
+A local RAG pipeline for parsing, indexing, querying, and evaluating academic PDFs — powered by LLMs, FAISS, and MinerU.
 
 ---
 
@@ -16,107 +16,41 @@ A local RAG pipeline for parsing, indexing, and querying academic PDFs — power
 * Downloads latest LLM papers using `arxiv` Python package
 * Stores to `data/papers/`
 
-### 3. Manual PDF Parsing (Deprecated)
-
-* Used `PyMuPDF` and `Nougat OCR` for extracting text and layout
-* Output to `data/manual_parsed/` (now removed)
-
-### 4. MinerU Setup
+### 3. MinerU Setup
 
 * Installed via `magic-pdf[full]`
 * Downloaded model weights from HuggingFace
 * Parsed PDFs into layout-aware JSON and Markdown
 * Output format: `data/mineru_parsed/{filename}/model.json`
 
----
-
-## 📅 Phase 5: Chunking + Embedding
-
-### ✨ Goal
-
-Transform parsed academic papers (from MinerU) into semantic chunks and generate embeddings for efficient and meaningful retrieval.
-
-### ✅ What Was Done
-
-#### ✏️ Chunk Processing
+### 4. Chunking + Embedding
 
 * **Script:** `scripts/process_chunks.py`
-* Reads from: `data/mineru_parsed/`
-* Actions:
-
-  * Cleans, deduplicates, and filters raw Markdown content.
-  * Splits text into semantically coherent chunks.
-  * Matches each chunk to the closest section title based on embedding similarity.
-  * Adds metadata: section title, chunk ID, source file, language, etc.
+* Cleans, deduplicates, and filters raw Markdown content
+* Splits text into semantically coherent chunks
+* Matches each chunk to the closest section title based on embedding similarity
+* Adds metadata: section title, chunk ID, source file, language, etc.
 * Outputs to: `data/final_chunks/`
+* Embeds each chunk and section title for semantic retrieval (FAISS)
 
-#### 🤖 Embedding
-
-* **Model used:** `sentence-transformers/all-MiniLM-L6-v2`
-* **Actions:**
-
-  * Embeds each section title and chunk for semantic matching and retrieval.
-  * Stores chunk embeddings for indexing in FAISS.
-
-#### 📘 Section Matching
-
-* Extracts headers from markdown.
-* Computes similarity between chunk embedding and section embeddings.
-* Assigns closest semantic match with optional similarity threshold.
-
-#### ⚖️ Reproducibility
-
-* All steps automated via `process_chunks.py`.
-* Deterministic and reproducible outputs.
-
----
-
-## 🤖 Phase 6: Hybrid Retrieval Engine (FAISS + BM25)
-
-### ✨ Goal
-
-Enable robust, semantically-enriched retrieval using both dense (FAISS) and sparse (BM25) methods.
-
-### ✅ What Was Done
-
-#### 🤝 Hybrid Retriever
+### 5. Hybrid Retrieval Engine (FAISS + BM25)
 
 * **File:** `vectorstore/hybrid_retriever.py`
-* **Components:**
+* Combines dense (FAISS) and sparse (BM25) retrieval
+* Section boosting, query expansion, reranking, and score fusion
+* CLI and test tools in `tests/`
 
-  * **FAISS Index**: fast dense retrieval using chunk embeddings.
-  * **BM25 Index**: keyword-based scoring using rank\_bm25.
-  * **Section Boosting**: boosts results with section-title matches.
-  * **Query Expansion**: optional synonym expansion via NLTK.
-  * **Reranker**: optional cross-encoder reranking for top-k results.
-  * **Score Fusion**: customizable weights for FAISS, BM25, and reranker.
+### 6. LLM Routing, Answer Generation, and Evaluation (Phase 7 — Complete!)
 
-#### 🔍 Testing & CLI
-
-* **File:** `tests/test_hybrid_retriever.py`
-* Includes:
-
-  * Retrieval testing and debugging.
-  * Score analysis and section match evaluation.
-  * CLI options for filtering, reranking, debugging scores.
-
-#### 📂 Data Cleanup
-
-* Deprecated manual parsing (`data/manual_parsed/`) removed.
-* Now relies solely on MinerU + chunking + embeddings.
-
-#### ♻️ Extensible
-
-* Modular design: easy to add new retrieval methods, scoring strategies, or filtering logic.
-
----
-
-## ⚡ What's Next
-
-### 📁 Phase 7: LLM Routing Layer + FastAPI Backend (Upcoming)
-
-* Expose the hybrid retriever as a `/ask` endpoint.
-* Use in downstream apps or frontend interface.
+* **Scripts:**
+  * `scripts/llm_answer.py`: LLM-based answer generation from top-k retrieved chunks
+  * `scripts/llm_evaluate_answers.py`: Automated LLM-based answer evaluation pipeline
+  * `scripts/llm_eval_metric.py`: Computes accuracy from LLM evaluation results
+* **Pipeline:**
+  * PDF upload → MinerU parsing → Chunking/embedding → Retrieval → LLM answer → LLM evaluation
+  * All steps can be run via CLI scripts
+* **Backend:**
+  * `main.py` provides a FastAPI entry point (for future API integration)
 
 ---
 
@@ -124,28 +58,70 @@ Enable robust, semantically-enriched retrieval using both dense (FAISS) and spar
 
 | File/Folder                       | Purpose                                               |
 | --------------------------------- | ----------------------------------------------------- |
+| `scripts/arxiv_downloader.py`     | Download LLM papers from arXiv                        |
 | `scripts/process_chunks.py`       | Chunking, cleaning, section assignment, and embedding |
 | `data/mineru_parsed/`             | MinerU-parsed JSON + markdown                         |
 | `data/final_chunks/`              | Final enriched and cleaned chunks                     |
 | `vectorstore/hybrid_retriever.py` | Core logic for hybrid retrieval                       |
-| `tests/test_hybrid_retriever.py`  | CLI tool for evaluating and debugging retrieval       |
+| `scripts/llm_answer.py`           | LLM answer generation from top-k chunks               |
+| `scripts/llm_evaluate_answers.py` | LLM-based answer evaluation pipeline                  |
+| `scripts/llm_eval_metric.py`      | Computes accuracy from LLM evaluation results         |
+| `evaluation_results/`             | LLM evaluation results (CSV)                          |
+| `main.py`                         | FastAPI entry point                                   |
 
 ---
 
-## 🚀 Run MinerU to Parse PDFs
+## 🚀 Usage
 
+### 1. Download Papers from ArXiv
+```bash
+python scripts/arxiv_downloader.py
+```
+
+### 2. Parse PDFs with MinerU
 ```bash
 magic-pdf -p data/papers/ -o data/mineru_parsed/
 ```
 
-## 🎓 Run Chunking + Embedding
-
+### 3. Chunk, Clean, and Embed
 ```bash
 python scripts/process_chunks.py
 ```
 
-## 🔬 Run Retrieval Test
-
+### 4. Generate LLM Answers (Gemini API)
 ```bash
-python tests/test_hybrid_retriever.py
+python scripts/llm_answer.py <paper_id> <question>
 ```
+
+### 5. Evaluate LLM Answers (Automated)
+```bash
+python scripts/llm_evaluate_answers.py [max_queries]
+```
+- Results saved to `evaluation_results/llm_eval_results.csv`
+
+### 6. Compute LLM Evaluation Metric
+```bash
+python scripts/llm_eval_metric.py
+```
+
+---
+
+## ⚙️ Environment Variables
+- Set your Gemini API key in a `.env` file or environment variable:
+  ```
+  GEMINI_API_KEY=your_gemini_api_key_here
+  ```
+
+---
+
+## 📝 Notes
+- All steps are fully automated and reproducible via CLI scripts.
+- The pipeline is modular: you can swap out chunking, retrieval, or LLM components as needed.
+- For API integration, extend `main.py` and the `backend/` directory.
+- For new PDFs, simply repeat steps 1–6.
+
+---
+
+## 🎉 Phase 7 Complete!
+- Full pipeline: PDF upload → MinerU parsing → Chunking/embedding → Retrieval → LLM answer → LLM evaluation
+- Ready for research, benchmarking, and further extension!

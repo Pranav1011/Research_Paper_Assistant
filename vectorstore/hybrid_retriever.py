@@ -11,7 +11,24 @@ from nltk.corpus import wordnet
 import nltk
 import logging
 from tqdm import tqdm
+from Levenshtein import ratio as levenshtein_ratio
+from difflib import SequenceMatcher
+from nltk.corpus import stopwords
+from nltk import download as nltk_download
+from fuzzywuzzy import process
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
 
+tokenizer = AutoTokenizer.from_pretrained("BAAI/bge-reranker-large")
+model = AutoModelForSequenceClassification.from_pretrained("BAAI/bge-reranker-large")
+
+def rerank(query, candidates):
+    pairs = [(query, c['text']) for c in candidates]
+    inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt")
+    with torch.no_grad():
+        scores = model(**inputs).logits.squeeze(-1).tolist()
+    reranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
+    return [c for c, s in reranked]
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -19,11 +36,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Initialize NLTK stopwords
+try:
+    STOPWORDS = set(stopwords.words('english'))
+except LookupError:
+    nltk_download('stopwords')
+    STOPWORDS = set(stopwords.words('english'))
+
 class HybridRetriever:
     # Keywords that indicate important sections
     IMPORTANT_SECTION_KEYWORDS = {
         'model', 'architecture', 'framework', 'method', 'approach',
-        'implementation', 'system', 'algorithm', 'technique', 'design'
+        'implementation', 'system', 'algorithm', 'technique', 'design',
+        'background', 'introduction', 'related work', 'experiments',
+        'results', 'discussion', 'conclusion', 'future work'
+    }
+    
+    # Common section title variations
+    SECTION_VARIATIONS = {
+        'introduction': ['intro', 'overview', 'background'],
+        'methodology': ['methods', 'approach', 'technique'],
+        'results': ['findings', 'outcomes', 'analysis'],
+        'discussion': ['analysis', 'interpretation'],
+        'conclusion': ['summary', 'concluding remarks'],
+        'related work': ['literature review', 'previous work'],
+        'experiments': ['experimental setup', 'evaluation'],
+        'architecture': ['system design', 'framework'],
+        'implementation': ['system implementation', 'code'],
+        'future work': ['future directions', 'future research']
     }
     
     def __init__(
@@ -34,10 +74,11 @@ class HybridRetriever:
         reranker_name: str = "BAAI/bge-reranker-base",
         faiss_weight: float = 0.7,
         bm25_weight: float = 0.3,
-        section_boost: float = 1.2,
+        section_boost: float = 1.5,
         use_reranker: bool = True,
         use_query_expansion: bool = True,
-        reranker_weight: float = 0.5
+        reranker_weight: float = 0.6,
+        section_similarity_threshold: float = 0.5
     ):
         """
         Initialize the hybrid retriever combining FAISS and BM25.
@@ -52,7 +93,8 @@ class HybridRetriever:
             section_boost: Score multiplier for important sections
             use_reranker: Whether to use the reranker for final results
             use_query_expansion: Whether to use query expansion with synonyms
-            reranker_weight: Weight for reranker score in final score (0-1, only used if reranker is enabled)
+            reranker_weight: Weight for reranker score in final score (0-1)
+            section_similarity_threshold: Threshold for section title similarity (0-1)
         """
         self.faiss_weight = faiss_weight
         self.bm25_weight = bm25_weight
@@ -60,6 +102,7 @@ class HybridRetriever:
         self.use_reranker = use_reranker
         self.use_query_expansion = use_query_expansion
         self.reranker_weight = reranker_weight
+        self.section_similarity_threshold = section_similarity_threshold
         
         # Download required NLTK data
         try:
@@ -101,6 +144,9 @@ class HybridRetriever:
         # Initialize section title embeddings
         self.section_title_embeddings = {}
         self._prepare_section_title_embeddings()
+        
+        # Initialize section title variations
+        self._prepare_section_variations()
     
     def save_index(self):
         """Save the FAISS index to disk."""
@@ -283,15 +329,44 @@ class HybridRetriever:
         return scores
     
     def _normalize_scores(self, scores: List[float]) -> List[float]:
-        """Normalize scores to [0, 1] range."""
+        """Enhanced score normalization with robust statistics."""
         if not scores:
             return []
-        min_score = min(scores)
-        max_score = max(scores)
-        if max_score == min_score:
+            
+        # Convert to numpy array for efficient computation
+        scores = np.array(scores)
+        
+        # Handle edge cases
+        if len(scores) == 1:
+            return [0.5]  # Middle value for single score
+            
+        # Remove outliers using IQR method
+        q1 = np.percentile(scores, 25)
+        q3 = np.percentile(scores, 75)
+        iqr = q3 - q1
+        lower_bound = q1 - 1.5 * iqr
+        upper_bound = q3 + 1.5 * iqr
+        mask = (scores >= lower_bound) & (scores <= upper_bound)
+        clean_scores = scores[mask]
+        
+        if len(clean_scores) == 0:
             return [0.5] * len(scores)
-        return [(s - min_score) / (max_score - min_score) for s in scores]
-    
+            
+        # Calculate robust statistics
+        min_score = np.min(clean_scores)
+        max_score = np.max(clean_scores)
+        
+        # Normalize scores
+        if max_score > min_score:
+            normalized = (scores - min_score) / (max_score - min_score)
+        else:
+            normalized = np.ones_like(scores) * 0.5
+            
+        # Apply sigmoid function to spread scores
+        normalized = 1 / (1 + np.exp(-5 * (normalized - 0.5)))
+        
+        return normalized.tolist()
+
     def _prepare_section_title_embeddings(self):
         """Prepare embeddings for section titles to enable semantic matching."""
         unique_sections = set()
@@ -308,29 +383,109 @@ class HybridRetriever:
                 title: emb for title, emb in zip(section_titles, embeddings)
             }
 
-    def _calculate_section_similarity(self, query: str, section_title: str) -> float:
-        """Calculate semantic similarity between query and section title."""
-        if not section_title or not query:
-            return 0.0
+    def _prepare_section_variations(self):
+        """Prepare section title variations for better matching."""
+        self.section_variations = {}
+        for main_title, variations in self.SECTION_VARIATIONS.items():
+            self.section_variations[main_title] = set(variations)
+            # Add main title to variations
+            self.section_variations[main_title].add(main_title)
+            # Add variations to each other
+            for var in variations:
+                if var not in self.section_variations:
+                    self.section_variations[var] = set(variations)
+                    self.section_variations[var].add(var)
+
+    def _normalize_section_title(self, title: str) -> str:
+        """Enhanced section title normalization."""
+        if not title:
+            return ""
             
-        # Get section title embedding
-        section_title_lower = section_title.lower()
-        if section_title_lower not in self.section_title_embeddings:
-            return 0.0
-            
-        # Get query embedding
-        query_emb = self.model.encode([query])[0]
-        section_emb = self.section_title_embeddings[section_title_lower]
+        # Convert to lowercase
+        title = title.lower()
         
-        # Calculate cosine similarity
-        similarity = np.dot(query_emb, section_emb) / (
-            np.linalg.norm(query_emb) * np.linalg.norm(section_emb)
+        # Remove LaTeX commands and special characters
+        title = re.sub(r'\\[a-zA-Z]+', '', title)
+        title = re.sub(r'[^\w\s]', ' ', title)
+        
+        # Remove section numbers and common prefixes
+        title = re.sub(r'^[ivxIVX]+\.?\s*', '', title)  # Remove roman numerals
+        title = re.sub(r'^\d+\.?\s*', '', title)  # Remove numbers
+        
+        # Remove common prefixes
+        prefixes = ['section', 'chapter', 'part', 'appendix']
+        for prefix in prefixes:
+            title = re.sub(f'^{prefix}\s+', '', title)
+        
+        # Remove extra whitespace
+        title = ' '.join(title.split())
+        
+        # Remove stopwords
+        tokens = [w for w in title.split() if w not in STOPWORDS]
+        
+        # Check for section variations
+        normalized = ' '.join(tokens)
+        for main_title, variations in self.section_variations.items():
+            if normalized in variations:
+                return main_title
+        
+        return normalized
+
+    def _calculate_section_similarity(self, title1: str, title2: str) -> float:
+        """Calculate similarity between two section titles using multiple metrics."""
+        if not title1 or not title2:
+            return 0.0
+            
+        # Normalize titles
+        norm1 = self._normalize_section_title(title1)
+        norm2 = self._normalize_section_title(title2)
+        
+        # Check for exact match after normalization
+        if norm1 == norm2:
+            return 1.0
+            
+        # Check for section variations
+        if norm1 in self.section_variations and norm2 in self.section_variations:
+            if self.section_variations[norm1] & self.section_variations[norm2]:
+                return 0.95
+        
+        # Calculate Levenshtein ratio
+        lev_ratio = levenshtein_ratio(norm1, norm2)
+        
+        # Calculate sequence matcher ratio
+        seq_ratio = SequenceMatcher(None, norm1, norm2).ratio()
+        
+        # Calculate Jaccard similarity
+        set1 = set(norm1.split())
+        set2 = set(norm2.split())
+        if set1 and set2:
+            jaccard = len(set1 & set2) / len(set1 | set2)
+        else:
+            jaccard = 0.0
+            
+        # Calculate semantic similarity using embeddings
+        if norm1 in self.section_title_embeddings and norm2 in self.section_title_embeddings:
+            emb1 = self.section_title_embeddings[norm1]
+            emb2 = self.section_title_embeddings[norm2]
+            semantic_sim = np.dot(emb1, emb2) / (np.linalg.norm(emb1) * np.linalg.norm(emb2))
+        else:
+            semantic_sim = 0.0
+        
+        # Combine metrics with adjusted weights
+        combined_similarity = (
+            0.3 * lev_ratio +      # Reduced from 0.4
+            0.2 * seq_ratio +      # Reduced from 0.3
+            0.2 * jaccard +        # Reduced from 0.3
+            0.3 * semantic_sim     # New semantic component
         )
         
-        return float(similarity)
+        return combined_similarity
 
     def _apply_section_boost(self, results: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
-        """Apply score boost to chunks from important sections using semantic matching."""
+        """Apply score boost to chunks from important sections using enhanced matching."""
+        # Get query embedding for semantic matching
+        query_emb = self.model.encode([query])[0]
+        
         for result in results:
             section_title = result.get('section_title', '')
             if not section_title:
@@ -340,20 +495,34 @@ class HybridRetriever:
             # Calculate semantic similarity
             semantic_similarity = self._calculate_section_similarity(query, section_title)
             
+            # Calculate content similarity
+            content_emb = self.model.encode([result['text']])[0]
+            content_similarity = np.dot(query_emb, content_emb) / (
+                np.linalg.norm(query_emb) * np.linalg.norm(content_emb)
+            )
+            
             # Check for keyword matches
             keyword_match = any(
                 keyword in section_title.lower() 
                 for keyword in self.IMPORTANT_SECTION_KEYWORDS
             )
             
-            # Calculate boost factor based on both semantic similarity and keywords
+            # Calculate boost factor based on multiple factors
             boost_factor = 1.0
-            if semantic_similarity > 0.7:  # High semantic similarity
-                boost_factor = self.section_boost * 1.2
-            elif semantic_similarity > 0.5:  # Medium semantic similarity
-                boost_factor = self.section_boost * 1.1
-            elif keyword_match:  # Keyword match only
-                boost_factor = self.section_boost
+            
+            # Base boost from semantic similarity
+            if semantic_similarity > self.section_similarity_threshold:
+                boost_factor = self.section_boost * (1.0 + semantic_similarity)
+            elif semantic_similarity > 0.4:  # Lowered from 0.5
+                boost_factor = self.section_boost * (1.0 + 0.7 * semantic_similarity)
+            
+            # Additional boost from content similarity
+            if content_similarity > 0.7:
+                boost_factor *= (1.0 + 0.3 * content_similarity)
+            
+            # Additional boost for keyword matches
+            if keyword_match:
+                boost_factor *= 1.2
             
             # Apply boost
             if boost_factor > 1.0:
@@ -361,6 +530,7 @@ class HybridRetriever:
                 result['boosted'] = True
                 result['boost_factor'] = boost_factor
                 result['semantic_similarity'] = semantic_similarity
+                result['content_similarity'] = content_similarity
             else:
                 result['boosted'] = False
                 
@@ -439,24 +609,25 @@ class HybridRetriever:
 
     def _calculate_dynamic_weights(self, query: str) -> Tuple[float, float]:
         """Calculate dynamic weights based on query characteristics and content analysis."""
-        # Default weights
-        faiss_w = self.faiss_weight
-        bm25_w = self.bm25_weight
+        # Default weights - adjusted to favor semantic matching
+        faiss_w = 0.8  # Increased from 0.7
+        bm25_w = 0.2   # Decreased from 0.3
         
         # Technical terms that might benefit from BM25
         technical_terms = {
             'api', 'function', 'method', 'class', 'interface', 
             'protocol', 'algorithm', 'implementation', 'code',
             'variable', 'parameter', 'return', 'type', 'struct',
-            'enum', 'constant', 'macro', 'define', 'include'
+            'enum', 'constant', 'macro', 'define', 'include',
+            'how', 'what', 'explain', 'describe', 'example'
         }
         
         # Semantic terms that might benefit from FAISS
         semantic_terms = {
-            'how', 'what', 'why', 'when', 'where', 'explain',
-            'describe', 'compare', 'difference', 'similar',
-            'example', 'use case', 'scenario', 'approach',
-            'solution', 'problem', 'issue', 'challenge'
+            'why', 'when', 'where', 'compare', 'difference', 'similar',
+            'use case', 'scenario', 'approach', 'solution', 'problem',
+            'issue', 'challenge', 'advantage', 'disadvantage', 'benefit',
+            'limitation', 'trade-off', 'impact', 'effect', 'result'
         }
         
         # Count term occurrences
@@ -466,7 +637,7 @@ class HybridRetriever:
         
         # Calculate query length factor
         query_length = len(query.split())
-        length_factor = min(1.0, query_length / 10)  # Normalize by typical query length
+        length_factor = min(1.0, query_length / 10)
         
         # Calculate adjustments based on term counts and query length
         if tech_count > 0 or semantic_count > 0:
@@ -475,13 +646,18 @@ class HybridRetriever:
             semantic_ratio = semantic_count / total_terms
             
             # Adjust weights based on term ratios and query length
-            adjustment = min(0.3, (tech_ratio - semantic_ratio) * length_factor)
+            adjustment = min(0.2, (tech_ratio - semantic_ratio) * length_factor)  # Reduced from 0.3
+            
+            # More conservative adjustment for technical queries
+            if tech_ratio > 0.7:
+                adjustment *= 1.2  # Reduced from 1.5
+            
             faiss_w -= adjustment
             bm25_w += adjustment
             
             # Ensure weights stay within reasonable bounds
-            faiss_w = max(0.3, min(0.8, faiss_w))
-            bm25_w = max(0.2, min(0.7, bm25_w))
+            faiss_w = max(0.6, min(0.9, faiss_w))  # Adjusted bounds
+            bm25_w = max(0.1, min(0.4, bm25_w))    # Adjusted bounds
             
             # Normalize weights to sum to 1
             total = faiss_w + bm25_w
@@ -522,7 +698,7 @@ class HybridRetriever:
         
         # Calculate dynamic weights
         faiss_w, bm25_w = self._calculate_dynamic_weights(processed_query)
-        
+            
         if score_debug:
             logger.info(f"📊 Using weights - FAISS: {faiss_w:.2f}, BM25: {bm25_w:.2f}")
             logger.info(f"BM25 tokenized query: {self._tokenize_text(processed_query)}")
@@ -538,75 +714,44 @@ class HybridRetriever:
         bm25_scores = self._normalize_scores(bm25_results)
         
         # Combine scores with dynamic weights
-        weights = self._calculate_dynamic_weights(query)
-        faiss_w, bm25_w = weights
         combined_scores = [
-            faiss_w * faiss_scores[i] + bm25_w * bm25_scores[i]
-            for i in range(len(faiss_scores))
+            faiss_w * fs + bm25_w * bs
+            for fs, bs in zip(faiss_scores, bm25_scores)
         ]
         
-        # Combine scores
-        combined_results = []
-        seen_indices = set()
-        
-        for idx in range(len(faiss_scores)):
-            if idx in seen_indices:
-                continue
-                
-            # Get scores from both retrievers
-            faiss_score = faiss_scores[idx]
-            bm25_score = bm25_scores[idx]
-            
-            # Calculate combined score
-            combined_score = combined_scores[idx]
-            
-            # Get chunk data
+        # Apply section boost
+        results = []
+        for idx, (chunk_id, _) in enumerate(faiss_results):
             if idx < len(self.chunks):
                 chunk = self.chunks[idx]
                 result = {
                     'text': chunk.get('text', ''),
                     'section_title': chunk.get('section_title', 'Unknown'),
                     'source_file': chunk.get('source_file', ''),
-                    'score': combined_score,
-                    'faiss_score': faiss_score,
-                    'bm25_score': bm25_score
+                    'score': combined_scores[idx],
+                    'faiss_score': faiss_scores[idx],
+                    'bm25_score': bm25_scores[idx]
                 }
-                combined_results.append(result)
-                seen_indices.add(idx)
-            else:
-                paper_id, chunk_idx = idx.rsplit('_', 1)
-                chunk_idx = int(chunk_idx)
-                if paper_id in self.chunk_metadata and chunk_idx < len(self.chunk_metadata[paper_id]):
-                    chunk = self.chunk_metadata[paper_id][chunk_idx]
-                    result = {
-                        'text': chunk.get('text', ''),
-                        'section_title': chunk.get('section_title', 'Unknown'),
-                        'source_file': chunk.get('source_file', ''),
-                        'score': combined_score,
-                        'faiss_score': faiss_score,
-                        'bm25_score': bm25_score
-                    }
-                    combined_results.append(result)
-                    seen_indices.add(idx)
+                results.append(result)
         
         # Apply section boost
-        combined_results = self._apply_section_boost(combined_results, query)
+        results = self._apply_section_boost(results, query)
         
         # Apply metadata filters if provided
         if metadata_filters:
-            combined_results = self._apply_metadata_filters(combined_results, metadata_filters)
+            results = self._apply_metadata_filters(results, metadata_filters)
         
         # Sort by combined score
-        combined_results.sort(key=lambda x: x['score'], reverse=True)
+        results.sort(key=lambda x: x['score'], reverse=True)
         
         # Apply reranker if enabled
-        if self.use_reranker and combined_results:
+        if self.use_reranker and results:
             logger.info("🔄 Applying reranker to top results")
-            reranker_input = [(query, result['text']) for result in combined_results[:20]]
+            reranker_input = [(query, result['text']) for result in results[:20]]
             reranker_scores = self.reranker.predict(reranker_input)
             
             # Update scores with reranker scores
-            for result, score in zip(combined_results[:20], reranker_scores):
+            for result, score in zip(results[:20], reranker_scores):
                 result['reranker_score'] = float(score)
                 # Weighted combination of hybrid and reranker scores
                 result['score'] = (1 - self.reranker_weight) * result['score'] + self.reranker_weight * float(score)
@@ -614,7 +759,7 @@ class HybridRetriever:
         # Print debug information if enabled
         if score_debug:
             logger.info("\n📊 Score Debug Information:")
-            for i, result in enumerate(combined_results[:k], 1):
+            for i, result in enumerate(results[:k], 1):
                 logger.info(f"\nResult {i}:")
                 logger.info(f"Section: {result['section_title']}")
                 logger.info(f"Source: {result['source_file']}")
@@ -631,14 +776,14 @@ class HybridRetriever:
         if len(self._cache) >= self._cache_size:
             # Remove oldest entry if cache is full
             self._cache.pop(next(iter(self._cache)))
-        self._cache[cache_key] = combined_results[:k]
+        self._cache[cache_key] = results[:k]
         
         # Log retrieval statistics
-        logger.info(f"✅ Retrieved {len(combined_results)} results")
-        if combined_results:
-            logger.info(f"📊 Score ranges: FAISS [{min(r['faiss_score'] for r in combined_results):.2f}, "
-                       f"{max(r['faiss_score'] for r in combined_results):.2f}], "
-                       f"BM25 [{min(r['bm25_score'] for r in combined_results):.2f}, "
-                       f"{max(r['bm25_score'] for r in combined_results):.2f}]")
+        logger.info(f"✅ Retrieved {len(results)} results")
+        if results:
+            logger.info(f"📊 Score ranges: FAISS [{min(r['faiss_score'] for r in results):.2f}, "
+                       f"{max(r['faiss_score'] for r in results):.2f}], "
+                       f"BM25 [{min(r['bm25_score'] for r in results):.2f}, "
+                       f"{max(r['bm25_score'] for r in results):.2f}]")
         
-        return combined_results[:k] 
+        return results[:k] 

@@ -11,3 +11,9 @@ faiss-cpu
 rank-bm25
 numpy
 nltk
+arxiv==1.4.8
+requests==2.31.0
+PyPDF2==3.0.1
+tqdm==4.66.1
+pandas
+google-generativeai

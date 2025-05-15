@@ -6,7 +6,7 @@ __pycache__/
 
 # Virtual environments
 venv/
-.env/
+.env
 
 # Jupyter & VSCode
 .ipynb_checkpoints/
@@ -14,7 +14,7 @@ venv/
 .DS_Store
 
 # PDF / parsed data
-data
+data/
 
 # HuggingFace model downloads
 ~/.cache/huggingface/
@@ -30,6 +30,13 @@ download_models_hf.py
 
 # PyMuPDF warnings
 *.xhtml
+
+# Results and evaluation
+evaluation_results/
+validation_results/
+
+# Environment and secrets
+.env
 
 # python filea
 debug_mineru_json.py
