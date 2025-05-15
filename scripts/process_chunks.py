@@ -6,6 +6,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
+import sys
 
 # Initialize the sentence transformer model
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
@@ -115,7 +116,37 @@ def clean_chunk(chunk: Dict) -> Optional[Dict]:
         
     return chunk
 
-def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path) -> None:
+def is_latex_block(text):
+    return bool(re.search(r'\$\$.*?\$\$', text, re.DOTALL))
+
+def merge_chunks(chunks, min_tokens=128):
+    merged = []
+    buffer = ""
+    buffer_meta = {}
+    for chunk in chunks:
+        text = chunk['text']
+        is_table = chunk.get('is_table', False)
+        if is_latex_block(text) or is_table:
+            if buffer:
+                merged.append({**buffer_meta, 'text': buffer.strip()})
+                buffer = ""
+                buffer_meta = {}
+            merged.append(chunk)
+        else:
+            if not buffer:
+                buffer_meta = {k: v for k, v in chunk.items() if k != 'text'}
+            if len(buffer.split()) + len(text.split()) < min_tokens:
+                buffer += " " + text
+            else:
+                if buffer:
+                    merged.append({**buffer_meta, 'text': buffer.strip()})
+                buffer = text
+                buffer_meta = {k: v for k, v in chunk.items() if k != 'text'}
+    if buffer:
+        merged.append({**buffer_meta, 'text': buffer.strip()})
+    return merged
+
+def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path, pdf_name: str = None) -> None:
     """
     Process all chunk files, clean them, and enrich them with section titles.
     
@@ -123,6 +154,7 @@ def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path) -> None
         chunks_dir: Directory containing chunk files
         mineru_dir: Directory containing mineru parsed files
         output_dir: Directory to save processed chunks
+        pdf_name: Optional PDF filename to process only this file
     """
     # Create output directory if it doesn't exist
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -130,22 +162,34 @@ def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path) -> None
     # Debug: Print directory contents
     print(f"\n📁 Input chunks directory: {chunks_dir}")
     print("Found files:")
-    for f in chunks_dir.glob("*_chunks.json"):
+    chunk_files = list(chunks_dir.glob("*_chunks.json"))
+    for f in chunk_files:
         print(f"  - {f.name}")
     
     # Process each chunk file
-    for chunk_file in chunks_dir.glob("*_chunks.json"):
+    for chunk_file in chunk_files:
+        # Get the base name without _chunks.json
+        base_name = chunk_file.stem.replace("_chunks", "")
+        
+        # If pdf_name is provided, only process matching files
+        if pdf_name and not pdf_name in chunk_file.name:
+            print(f"Skipping {chunk_file.name} as it doesn't match PDF name {pdf_name}")
+            continue
+            
         print(f"\n{'='*80}")
         print(f"Processing {chunk_file.name}...")
         print(f"{'='*80}")
         
         # Get corresponding markdown file
-        paper_id = chunk_file.stem.replace("_chunks", "")
-        md_file = mineru_dir / paper_id / "auto" / f"{paper_id}.md"
+        md_file = mineru_dir / base_name / base_name / "auto" / f"{base_name}.md"
         
         if not md_file.exists():
-            print(f"⚠️ Warning: Markdown file not found: {md_file}")
-            continue
+            original_md_file = mineru_dir / base_name / "auto" / f"{base_name}.md"
+            if original_md_file.exists():
+                md_file = original_md_file
+            else:
+                print(f"⚠️ Warning: Markdown file not found: {md_file}")
+                continue
         
         # Read markdown content
         with open(md_file, 'r', encoding='utf-8') as f:
@@ -194,7 +238,7 @@ def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path) -> None
                 'text': text,
                 'title': cleaned_chunk.get('title', ''),  # Preserve the original title
                 'section_title': section_title,
-                'source_file': f"{paper_id}.md",  # Match original format
+                'source_file': f"{base_name}.md",  # Match original format
                 'language': cleaned_chunk.get('language', 'en'),  # Preserve language
                 'is_english': cleaned_chunk.get('is_english', True),  # Preserve is_english
                 'length': len(text)  # Update length based on text
@@ -207,8 +251,14 @@ def process_chunks(chunks_dir: Path, mineru_dir: Path, output_dir: Path) -> None
             
             processed_chunks.append(processed_chunk)
         
-        # Save processed chunks
-        output_file = output_dir / f"{paper_id}_final_chunks.json"
+        # Merge small chunks
+        processed_chunks = merge_chunks(processed_chunks, min_tokens=128)
+        avg_tokens = sum(len(c['text'].split()) for c in processed_chunks) / max(1, len(processed_chunks))
+        print(f"{base_name}: Average chunk size: {avg_tokens:.1f} tokens ({len(processed_chunks)} chunks)")
+        
+        # Save processed chunks using the base name
+        output_file = output_dir / f"{base_name}_final_chunks.json"
+            
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(processed_chunks, f, indent=2, ensure_ascii=False)
         
@@ -221,9 +271,10 @@ def main():
     chunks_dir = base_dir / "chunks"
     mineru_dir = base_dir / "mineru_parsed"
     output_dir = base_dir / "final_chunks"
+    pdf_name = sys.argv[1] if len(sys.argv) > 1 else None
     
     # Process chunks
-    process_chunks(chunks_dir, mineru_dir, output_dir)
+    process_chunks(chunks_dir, mineru_dir, output_dir, pdf_name)
     print("\n✨ Chunk processing complete!")
 
 if __name__ == "__main__":
