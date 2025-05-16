@@ -34,11 +34,20 @@ def get_relevant_chunks(pdf_name: str, question: str, top_k: int = 3):
     Returns:
         List of relevant chunks
     """
-    # Load the processed chunks
-    chunks_file = Path("data/final_chunks") / f"{pdf_name}_final_chunks.json"
+    # Look for the chunks file in the final_chunks directory
+    chunks_dir = Path("data/final_chunks")
+    if not chunks_dir.exists():
+        raise FileNotFoundError("Final chunks directory not found")
     
-    if not chunks_file.exists():
-        raise FileNotFoundError(f"Chunk file not found for PDF: {pdf_name}")
+    # List all chunk files
+    chunk_files = list(chunks_dir.glob("*_final_chunks.json"))
+    if not chunk_files:
+        raise FileNotFoundError("No chunk files found in final_chunks directory")
+    
+    # Find the most recent chunk file
+    chunks_file = max(chunk_files, key=lambda x: x.stat().st_mtime)
+    
+    print(f"Using chunks file: {chunks_file}")
     
     with open(chunks_file, 'r', encoding='utf-8') as f:
         chunks = json.load(f)

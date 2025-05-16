@@ -59,9 +59,25 @@ def process_pdf_and_answer(pdf_file, question):
                     found_answer = True
                     continue
                 if found_answer and line.strip():
+                    # Stop if we hit the next step marker or end of output
+                    if "[1/4]" in line or "[2/4]" in line or "[3/4]" in line or "[4/4]" in line:
+                        break
                     answer += line.strip() + "\n"
-                if found_answer and "[5/6]" in line:
-                    break
+            
+            if not answer:
+                # If no answer was found in the pipeline output, try running llm_answer.py directly
+                logger.info("No answer found in pipeline output, trying direct answer generation")
+                cmd = ["python", "scripts/llm_answer.py", "input", question]
+                result = subprocess.run(cmd, capture_output=True, text=True)
+                
+                if result.returncode == 0:
+                    output_lines = result.stdout.split('\n')
+                    for line in output_lines:
+                        if "Answer:" in line:
+                            found_answer = True
+                            continue
+                        if found_answer and line.strip():
+                            answer += line.strip() + "\n"
             
             if not answer:
                 logger.warning("No answer was generated")
