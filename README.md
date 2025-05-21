@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Deep Researcher TS
 
-## Getting Started
+A modern research assistant built with Next.js, TypeScript, and FastAPI. This project combines a TypeScript/React frontend with a Python FastAPI backend to perform real web searches and generate structured research summaries using local LLMs via Ollama.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend**: Built with Next.js and TypeScript, featuring a modern UI with tabs for displaying research results.
+- **Backend**: FastAPI-based Python server that performs real web searches using DuckDuckGo and processes results with local LLMs (Llama 2, Mistral, Llama 3, DeepSeek, Qwen2, etc.).
+- **Structured Output**: Research results are organized into sections: Summary, Key Findings, Trends in Industry, Future Trends, Sources, and Process.
+- **Dynamic Model Selection**: Choose from multiple local LLMs via a dropdown in the frontend.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Prerequisites
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js (v14 or later)
+- Python (v3.8 or later)
+- Ollama installed and running locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Setup
 
-## Learn More
+### Frontend
 
-To learn more about Next.js, take a look at the following resources:
+1. Navigate to the frontend directory:
+   ```sh
+   cd frontend
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Start the development server:
+   ```sh
+   npm run dev
+   ```
 
-## Deploy on Vercel
+### Backend
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Navigate to the backend directory:
+   ```sh
+   cd backend
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+3. Start the FastAPI server:
+   ```sh
+   uvicorn main:app --reload
+   ```
+
+## Usage
+
+1. Open your browser and navigate to `http://localhost:3000`.
+2. Enter a research topic and select a model from the dropdown.
+3. Submit the form to receive a structured research summary.
+
+## Project Structure
+
+- `frontend/`: Contains the Next.js/TypeScript frontend code.
+- `backend/`: Contains the FastAPI backend code.
+- `README.md`: Project documentation.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License.
