@@ -106,4 +106,4 @@ PRs and issues welcome! Please open an issue for bugs, feature requests, or ques
 
 ## License
 
-MIT (or your preferred license) 
+MIT
