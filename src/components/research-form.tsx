@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { Paperclip, Globe2 } from "lucide-react";
 
 interface ResearchFormProps {
   onResearchComplete: (results: {
@@ -85,13 +86,10 @@ export function ResearchForm({ onResearchComplete }: ResearchFormProps) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Start Research</CardTitle>
-      </CardHeader>
+    <Card className="w-full bg-zinc-900 text-zinc-200 border-zinc-800">
       <CardContent>
-        <form onSubmit={handleColiVaraSubmit} className="space-y-4">
-          <div className="space-y-2">
+        <form onSubmit={handleColiVaraSubmit} className="space-y-3">
+          <div className="space-y-1">
             <label htmlFor="topic" className="text-sm font-medium">
               Research Topic
             </label>
@@ -101,64 +99,73 @@ export function ResearchForm({ onResearchComplete }: ResearchFormProps) {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               required
+              className="bg-zinc-800 border-zinc-700 text-zinc-100"
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="file" className="text-sm font-medium">
-              Upload PDF (Required)
-            </label>
-            <Input
-              id="file"
-              type="file"
-              accept=".pdf"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="cursor-pointer"
-            />
-            <p className="text-sm text-muted-foreground">
-              Upload a PDF for more accurate and detailed research results
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <input
-              id="includeWeb"
-              type="checkbox"
-              checked={includeWeb}
-              onChange={(e) => setIncludeWeb(e.target.checked)}
-              className="form-checkbox h-4 w-4 text-blue-600"
-            />
-            <label htmlFor="includeWeb" className="text-sm font-medium">
-              Include Web Search
-            </label>
+          {/* PDF and Web Search side by side, justified between */}
+          <div className="flex items-center gap-4">
+            {/* PDF Attach */}
+            <div className="flex items-center gap-2">
+              <label htmlFor="file" className="text-sm font-medium flex items-center gap-1">
+                <span className="relative">
+                  <Paperclip className="w-5 h-5 text-blue-400" />
+                  <span className="absolute -top-1 -right-2 text-xs text-red-500 font-bold">*</span>
+                </span>
+                <span className="sr-only">Upload PDF (Required)</span>
+              </label>
+              <Input
+                id="file"
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+                className="w-28 h-8 p-0 border-none bg-zinc-800 text-zinc-100 file:bg-zinc-700 file:text-zinc-100 file:rounded file:px-2 file:py-1 file:border-none"
+                required
+              />
+              <span className="text-xs text-zinc-400 ml-2">PDF required</span>
+            </div>
+            {/* Web Search */}
+            <div className="flex items-center space-x-2 ml-2 flex-shrink-0">
+              <input
+                id="includeWeb"
+                type="checkbox"
+                checked={includeWeb}
+                onChange={(e) => setIncludeWeb(e.target.checked)}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <label htmlFor="includeWeb" className="text-sm font-medium flex items-center gap-1">
+                <Globe2 className="w-4 h-4 text-blue-400" />
+                Web Search
+              </label>
+            </div>
           </div>
 
           {includeWeb && (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label htmlFor="model" className="text-sm font-medium">
                 Select Model (Web Search Only)
               </label>
               <Select value={model} onValueChange={setModel}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-zinc-800 border-zinc-700 text-zinc-100">
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-zinc-900 border-zinc-700 text-zinc-100">
                   <SelectItem value="llama3">Llama 3</SelectItem>
                   <SelectItem value="Qwen2">Qwen2</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-zinc-400">
                 Model selection only applies when web search is enabled
               </p>
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={isLoading || !file}>
+          <Button type="submit" className="w-full mt-2" disabled={isLoading || !file}>
             {isLoading ? "Researching..." : "Start Research"}
           </Button>
         </form>
         {coliResult && !includeWeb && (
-          <Button onClick={() => handleWebSearch()} className="w-full mt-4" disabled={isLoading} variant="secondary">
+          <Button onClick={() => handleWebSearch()} className="w-full mt-2" disabled={isLoading} variant="secondary">
             {isLoading ? "Searching Web..." : "Run Web Search"}
           </Button>
         )}

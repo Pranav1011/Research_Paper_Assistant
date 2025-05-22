@@ -106,13 +106,13 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
   sections = sections.filter(section => section.title.toLowerCase() !== "sources");
 
   return (
-    <Card>
+    <Card className="w-full bg-zinc-900 text-zinc-200">
       <CardHeader>
-        <CardTitle>Research Results</CardTitle>
+        <CardTitle className="text-zinc-100">Research Results</CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="result" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-3 bg-zinc-800">
             <TabsTrigger value="result">Results</TabsTrigger>
             <TabsTrigger value="web">Web Search</TabsTrigger>
             <TabsTrigger value="sources">Web Search Sources</TabsTrigger>
@@ -125,27 +125,27 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
                 {sections.map((section, idx) => (
                   <div key={idx}>
                     {sections.length > 1 && (
-                      <h3 className="text-lg font-semibold mb-2 text-gray-800 border-b pb-1">{section.title}</h3>
+                      <h3 className="text-lg font-semibold mb-2 text-zinc-100 border-b border-zinc-700 pb-1 dark:text-zinc-100">{section.title}</h3>
                     )}
-                    <div className="prose prose-sm max-w-none text-gray-700 bg-gray-50 p-4 rounded-lg shadow-sm">
+                    <div className="prose prose-sm max-w-none bg-zinc-800 text-zinc-200 p-4 rounded-lg shadow-sm dark:text-zinc-200">
                       <ReactMarkdown>{preprocessBullets(section.content, section.title)}</ReactMarkdown>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-gray-500 italic">No results available. Try a different PDF or research topic.</div>
+              <div className="text-zinc-400 italic">No results available. Try a different PDF or research topic.</div>
             )}
             {/* Debug: Raw JSON */}
             <details className="mt-6">
-              <summary className="cursor-pointer text-xs text-gray-400">Show Raw JSON</summary>
-              <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto mt-2">{JSON.stringify(result, null, 2)}</pre>
+              <summary className="cursor-pointer text-xs text-zinc-400">Show Raw JSON</summary>
+              <pre className="text-xs bg-zinc-900 p-2 rounded overflow-x-auto mt-2 text-zinc-300">{JSON.stringify(result, null, 2)}</pre>
             </details>
           </TabsContent>
 
           {/* Web Search Summary */}
           <TabsContent value="web" className="mt-4">
-            <div className="whitespace-pre-line break-words prose max-w-none text-gray-700 bg-gray-50 p-4 rounded-lg shadow-sm">
+            <div className="whitespace-pre-line break-words prose max-w-none bg-zinc-800 text-zinc-200 p-4 rounded-lg shadow-sm dark:text-zinc-200">
               <ReactMarkdown>{webSummary || "No web search performed yet."}</ReactMarkdown>
             </div>
           </TabsContent>
@@ -155,9 +155,9 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
             {webSources.length > 0 ? (
               <ul className="space-y-4">
                 {webSources.map((source, idx) => (
-                  <li key={idx} className="border rounded-lg p-4 shadow-sm bg-white">
-                    <div className="font-semibold mb-2 text-gray-800">{source.title || "Untitled"}</div>
-                    <div className="text-sm mb-2 text-gray-700">{source.body || "No description available."}</div>
+                  <li key={idx} className="border rounded-lg p-4 shadow-sm bg-zinc-800 text-zinc-200">
+                    <div className="font-semibold mb-2 text-zinc-100">{source.title || "Untitled"}</div>
+                    <div className="text-sm mb-2 text-zinc-200">{source.body || "No description available."}</div>
                     {source.page_image && (
                       <div className="mt-2 mb-2">
                         <img
@@ -166,7 +166,7 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
                           className="max-w-full h-auto rounded-lg shadow-sm"
                         />
                         {source.page_number && (
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-zinc-400 mt-1">
                             Page {source.page_number}
                           </p>
                         )}
@@ -177,7 +177,7 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
                         href={source.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline text-sm inline-flex items-center gap-1"
+                        className="text-blue-400 hover:underline text-sm inline-flex items-center gap-1"
                       >
                         Visit Source
                       </a>
@@ -186,7 +186,7 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-500 italic">No sources found.</p>
+              <p className="text-zinc-400 italic">No sources found.</p>
             )}
           </TabsContent>
         </Tabs>
