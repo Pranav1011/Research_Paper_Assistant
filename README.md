@@ -1,80 +1,109 @@
-# Deep Researcher TS
+# Deep Researcher TS – Backend (FastAPI + Gemini 2.0 Flash)
 
-A modern research assistant with a beautiful UI, built with Next.js (TypeScript) and FastAPI (Python). This project lets you upload PDFs, ask research questions, and get structured, AI-powered answers using local LLMs or Gemini (free tier), with robust fallback to web search.
+A modern research assistant backend powered by Google Gemini 2.0 Flash (free tier), with robust PDF analysis, real web search, and streaming-ready endpoints. Built for seamless integration with a Next.js/React frontend.
+
+---
 
 ## Features
 
-- **Modern UI**: Next.js/TypeScript frontend with tabs, markdown rendering, and beautiful formatting.
-- **PDF Upload**: Upload a PDF and ask research questions; the AI answers based on the document.
-- **AI Models**: Uses Gemini (free tier) for document Q&A. If unavailable, falls back to web search + local LLMs (Ollama, Llama 3, etc.).
-- **Web Search**: Optionally include real-time web search in your research.
-- **Structured Output**: Results are organized into sections: Results, Key Findings, Trends in Industry, Future Trends, and Process.
-- **Robust Error Handling**: Graceful fallback if any service is down or rate-limited.
-- **ColiVara Ready**: ColiVara integration is preserved in the backend for future use.
+- **LLM-powered research**: Uses Gemini 2.0 Flash (free tier) for all research queries and PDF analysis.
+- **PDF support**: Upload a PDF and get a structured, detailed summary and insights.
+- **Web search integration**: Optionally augment research with real-time web search (DuckDuckGo, streaming-ready).
+- **Streaming output**: Frontend is ready for streaming (word-by-word/chunked) answers.
+- **Modern API**: FastAPI backend, CORS enabled, easy to extend.
+- **Minimal dependencies**: No paid LLMs, no unnecessary bloat.
 
-## Prerequisites
-
-- Node.js (v16 or later)
-- Python (v3.9 or later)
-- (Optional) Ollama installed and running locally for local LLM fallback
-- (Optional) ColiVara API key for future advanced document search
-- Google Gemini API key (free tier supported)
+---
 
 ## Setup
 
-### Frontend
+1. **Clone the repo**
 
-1. Install dependencies:
-   ```sh
-   npm install
-   ```
-2. Start the development server:
-   ```sh
-   npm run dev
-   ```
+```bash
+git clone <your-repo-url>
+cd deep-researcher-ts/backend
+```
 
-### Backend
+2. **Install dependencies**
 
-1. Install dependencies:
-   ```sh
-   cd backend
-   pip install -r requirements.txt
-   ```
-2. Add your Gemini API key to `.env`:
-   ```env
-   GOOGLE_API_KEY=your_gemini_api_key_here
-   ```
-3. Start the FastAPI server:
-   ```sh
-   uvicorn app.main:app --reload
-   ```
+```bash
+pip install -r requirements.txt
+```
 
-## Usage
+3. **Set up your Google API key**
 
-1. Open your browser and go to `http://localhost:3000`.
-2. Enter a research topic, upload a PDF, and (optionally) enable web search.
-3. Click "Start Research" to get a structured, AI-powered answer.
-4. Results are beautifully formatted, with bullet points and sections.
+- Get a [Google AI Studio API key](https://aistudio.google.com/app/apikey)
+- Create a `.env` file:
 
-## Project Structure
+```
+GOOGLE_API_KEY=your-google-api-key-here
+```
 
-- `src/` — Next.js frontend (components, pages, styles, etc.)
-- `backend/app/main.py` — FastAPI backend (all logic here)
-- `backend/requirements.txt` — Backend dependencies
-- `README.md` — Project documentation
+4. **Run the backend**
 
-### File/Folder Cleanup Recommendations
-- `backend/app/test.py` — Old ColiVara test script. Delete or move to `backend/experiments/` if you want to keep it for reference.
-- `src/types/` — Currently empty. Delete if not planning to use.
-- `scripts/setup.sh` — Delete if not used.
-- `components.json` — Delete if not used by your build/deployment.
-- `.next/`, `node_modules/`, `venv/` — Should be in `.gitignore` (not committed).
+```bash
+uvicorn app.main:app --reload
+```
+
+---
+
+## API Endpoints
+
+### `POST /api/research`
+- **Description:** Analyze a research query and PDF using Gemini 2.0 Flash.
+- **Form fields:**
+  - `query` (str): Your research question/topic
+  - `file` (PDF): PDF file to analyze (required)
+- **Returns:**
+  - `summary`: Structured, detailed answer
+  - `sources`: List of sources (PDF, web, etc.)
+  - `process`: Explanation of the research process
+
+### `POST /api/websearch`
+- **Description:** (Optional) Augment research with real-time web search (DuckDuckGo)
+- **Body:**
+  - `query` (str): Your research question/topic
+- **Returns:**
+  - `summary`: Web search summary
+  - `sources`: List of web sources
+  - `process`: Explanation of the process
+
+---
+
+## Model Info
+
+- **Model used:** `gemini-2.0-flash` (Google Gemini 2.0 Flash)
+- **Why?**
+  - Free tier, generous limits (1M context, web search grounding, etc.)
+  - No paid tokens required
+  - Reliable, fast, and supports structured prompting
+- **No other LLMs are used.**
+
+---
+
+## Streaming Support
+
+- The frontend is ready for streaming output (word-by-word/chunked answers).
+- To enable streaming, add a `/api/research/stream` endpoint using FastAPI's `StreamingResponse` and Gemini's streaming API (if/when available).
+
+---
+
+## Project Decisions & Highlights
+
+- **Frontend:** Next.js/React, beautiful dark mode, chat-like UX, streaming-ready.
+- **Backend:** FastAPI, only Gemini 2.0 Flash, robust error handling, PDF parsing, and web search.
+- **No paid LLMs:** Only free-tier Gemini 2.0 Flash is used for all research.
+- **Modern UI:** Input at the bottom, results above, minimalist background, and compact forms.
+- **Attribution:** Developed by Sai Pranav.
+
+---
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
+PRs and issues welcome! Please open an issue for bugs, feature requests, or questions.
+
+---
 
 ## License
 
-MIT License.
-
+MIT (or your preferred license) 

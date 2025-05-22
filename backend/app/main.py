@@ -41,21 +41,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize Gemini and list available models
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-available_models = [m.name for m in genai.list_models()]
-print("Available Gemini models:", available_models)
-
-# Use the first available model that can generate content
-model = None
-for model_name in available_models:
-    if "generateContent" in genai.get_model(model_name).supported_generation_methods:
-        model = genai.GenerativeModel(model_name)
-        print(f"Using model: {model_name}")
-        break
-
-if model is None:
-    print("Warning: No suitable Gemini model found. Will fall back to web search.")
+# Always use Gemini 2.0 Flash
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel('gemini-2.0-flash')
 
 # Preserve ColiVara code as comments for future use
 """
@@ -66,7 +55,6 @@ colivara_client = ColiVara(api_key=os.getenv("COLIVARA_API_KEY"))
 class ResearchRequest(BaseModel):
     query: str
     context: Optional[str] = None
-    model: Optional[str] = "llama3"  # Default to llama3
 
 class ResearchResponse(BaseModel):
     summary: str
@@ -93,7 +81,7 @@ async def research(
         for page in pdf_reader.pages:
             pdf_text += page.extract_text()
 
-        # Use Gemini to analyze the PDF
+        # Create prompt
         prompt = f"""Please analyze the following PDF content and answer the query: {query}
 
 PDF Content:
@@ -107,47 +95,16 @@ Please provide:
 
 Format your response in a clear, structured way."""
 
-        try:
-            if model is None:
-                raise Exception("No Gemini model available")
-            response = model.generate_content(prompt)
-            summary = response.text
-        except Exception as e:
-            error_msg = str(e)
-            if "429" in error_msg and "quota" in error_msg.lower():
-                # If we hit rate limits, fall back to web search
-                print("Gemini rate limit hit, falling back to web search...")
-                web_results = duckduckgo_search_sync(query)
-                context = "\n".join([f"{r['title']}: {r['body']} ({r['href']})" for r in web_results])
-                llm = ChatOllama(
-                    base_url="http://localhost:11434",
-                    model="llama3",
-                    temperature=0.7
-                )
-                prompt = create_prompt(query, context)
-                result = await llm.ainvoke(prompt)
-                summary = result.content if hasattr(result, "content") else str(result)
-            else:
-                print(f"Error with Gemini: {error_msg}")
-                print("Falling back to web search...")
-                web_results = duckduckgo_search_sync(query)
-                context = "\n".join([f"{r['title']}: {r['body']} ({r['href']})" for r in web_results])
-                llm = ChatOllama(
-                    base_url="http://localhost:11434",
-                    model="llama3",
-                    temperature=0.7
-                )
-                prompt = create_prompt(query, context)
-                result = await llm.ainvoke(prompt)
-                summary = result.content if hasattr(result, "content") else str(result)
-        
-        # Process the response
+        # Use Gemini 2.0 Flash
+        response = model.generate_content(prompt)
+        summary = response.text
+
         sources = [{
             "title": file.filename,
             "href": "",
-            "body": pdf_text[:500] + "...",  # First 500 chars as preview
+            "body": pdf_text[:500] + "...",
             "page_image": "",
-            "page_number": "1"  # We don't have page numbers from Gemini
+            "page_number": "1"
         }]
 
         # Clean up
@@ -159,7 +116,7 @@ Format your response in a clear, structured way."""
         return ResearchResponse(
             summary=summary,
             sources=sources,
-            process="Research conducted using Google's Gemini AI model."
+            process="Research conducted using Google's Gemini 2.0 Flash AI model."
         )
 
     except Exception as e:
