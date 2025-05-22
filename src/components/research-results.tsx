@@ -1,152 +1,196 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ReactMarkdown from "react-markdown";
 
 interface Source {
   title: string;
   href: string;
   body: string;
+  page_image?: string;
+  page_number?: string;
 }
 
 interface ResearchResultsProps {
-  summary: string;
-  sources: Source[];
-  process?: string;
+  result: any; // Accept any type for raw debug
+  webSummary?: string; // Web search summary
+  webSources?: Source[]; // Web search sources
 }
 
-function renderSummary(summary: any): React.ReactNode {
-  if (summary == null) return <p>No summary available.</p>;
-
-  if (typeof summary === "string" || typeof summary === "number") {
-    return <p>{summary}</p>;
-  }
-
-  if (Array.isArray(summary)) {
-    return (
-      <ul className="list-disc pl-5">
-        {summary.map((item, idx) => (
-          <li key={idx}>{renderSummary(item)}</li>
-        ))}
-      </ul>
-    );
-  }
-
-  if (typeof summary === "object") {
-    if (
-      Object.keys(summary).length === 1 &&
-      (summary.description || summary.explanation)
-    ) {
-      return <p>{summary.description || summary.explanation}</p>;
+// Helper to extract sections from answer text
+function parseSections(answer: string) {
+  if (!answer) return [];
+  // Remove extra quotes and normalize
+  let clean = answer.replace(/^"|"$/g, "").replace(/\\n/g, "\n");
+  // Split by section headers
+  const sectionRegex = /^(Summary|Key Findings|Trends in Industry|Future Trends|Process|Sources|Results):/gim;
+  let parts = clean.split(sectionRegex).filter(Boolean);
+  let sections = [];
+  if (parts.length === 1) {
+    // Only one section, just return as results
+    let content = parts[0].trim();
+    // If it starts with 'Summary:' or 'Results:', strip it
+    if (content.toLowerCase().startsWith("summary:")) {
+      content = content.slice(8).trim();
+    } else if (content.toLowerCase().startsWith("results:")) {
+      content = content.slice(8).trim();
     }
-    return (
-      <div className="space-y-4">
-        {Object.entries(summary).map(([key, value]) => (
-          <div key={key}>
-            <h4 className="font-semibold capitalize mb-1">{key.replace(/_/g, " ")}</h4>
-            {renderSummary(value)}
-          </div>
-        ))}
-      </div>
-    );
+    sections.push({ title: "Results", content });
+  } else {
+    for (let i = 0; i < parts.length - 1; i += 2) {
+      let title = parts[i].trim();
+      if (title.toLowerCase() === "summary") title = "Results";
+      sections.push({ title, content: parts[i + 1].trim() });
+    }
   }
-
-  return <p>{String(summary)}</p>;
+  return sections;
 }
 
-function renderGapsOrQueries(items: any[]) {
-  if (!items || items.length === 0) return null;
-    return (
-      <ul className="list-disc pl-5">
-        {items.map((item, idx) => {
-          if (typeof item === "string" || typeof item === "number") {
-            return <li key={idx}>{item}</li>;
-          }
-          if (typeof item === "object" && item !== null) {
-            return (
-              <li key={idx}>
-                {item.description || item.gap || item.query || JSON.stringify(item)}
-                {item.explanation && (
-                  <div className="text-sm text-muted-foreground pl-2">{item.explanation}</div>
-                )}
-                {item.followup_query && (
-                  <div className="text-sm text-muted-foreground pl-2">
-                    <strong>Follow-up:</strong> {item.followup_query}
-                  </div>
-                )}
-              </li>
-            );
-          }
-          return <li key={idx}>{String(item)}</li>;
-        })}
-      </ul>
-    );
+// Improved bullet formatting for specific sections
+function preprocessBullets(text: string, sectionTitle: string) {
+  // Only apply to these sections
+  const bulletSections = ["key findings", "trends in industry", "future trends"];
+  if (bulletSections.includes(sectionTitle.toLowerCase())) {
+    // If already markdown bullets, return as is
+    if (/^\s*[-*] /m.test(text)) return text;
+    // Try splitting on semicolons first
+    if (text.includes(";")) {
+      return text
+        .split(";")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
+        .join("\n");
+    }
+    // Try splitting on newlines
+    if (text.includes("\n")) {
+      return text
+        .split("\n")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
+        .join("\n");
+    }
+    // Try splitting on periods (for sentences)
+    if (text.includes(". ")) {
+      return text
+        .split(/\.\s+/)
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => (line.endsWith(".")) ? line : line + ".")
+        .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
+        .join("\n");
+    }
+    // Try splitting on commas (last resort)
+    if (text.includes(",")) {
+      return text
+        .split(",")
+        .map(line => line.trim())
+        .filter(Boolean)
+        .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
+        .join("\n");
+    }
   }
+  // For other sections, return as is
+  return text;
+}
 
-  export function ResearchResults({
-    summary,
-    sources = [],
-    process = "",
-  }: ResearchResultsProps) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Research Results</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="summary">Summary</TabsTrigger>
-              <TabsTrigger value="sources">Sources</TabsTrigger>
-              <TabsTrigger value="process">Process</TabsTrigger>
-            </TabsList>
-  
-            <TabsContent value="summary" className="mt-4">
-              <h3 className="font-semibold mb-1">Summary</h3>
-              <div className="whitespace-pre-line">{summary || "No summary available."}</div>
-            </TabsContent>
+export function ResearchResults({ result, webSummary = "", webSources = [] }: ResearchResultsProps) {
+  // Try to extract and format the answer
+  let answer = result?.summary || result?.result || result || "";
+  // If answer is an object, try to get a string
+  if (typeof answer === "object") {
+    answer = JSON.stringify(answer, null, 2);
+  }
+  let sections = parseSections(answer);
+  // Remove the 'Sources' section from the results tab
+  sections = sections.filter(section => section.title.toLowerCase() !== "sources");
 
-            {/* Sources Tab */}
-            <TabsContent value="sources" className="mt-4">
-              {sources.length > 0 ? (
-                <ul className="space-y-4">
-                  {sources.map((source, idx) => (
-                    <li key={idx} className="border rounded-lg p-4 shadow-sm">
-                      <div className="font-semibold mb-2">{source.title || "Untitled"}</div>
-                      <div className="text-sm mb-2">{source.body || "No description available."}</div>
-                      {source.href && (
-                        <a
-                          href={source.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline text-sm inline-flex items-center gap-1"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                            <polyline points="15 3 21 3 21 9"></polyline>
-                            <line x1="10" y1="14" x2="21" y2="3"></line>
-                          </svg>
-                          Visit Source
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No sources found.</p>
-              )}
-            </TabsContent>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Research Results</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Tabs defaultValue="result" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="result">Results</TabsTrigger>
+            <TabsTrigger value="web">Web Search</TabsTrigger>
+            <TabsTrigger value="sources">Web Search Sources</TabsTrigger>
+          </TabsList>
 
-            {/* Process Tab */}
-            <TabsContent value="process" className="mt-4">
-              {process ? (
-                <div className="prose">
-                  {process}
-                </div>
-              ) : (
-                <p>No process steps available.</p>
-              )}
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
-    );
-  } 
+          {/* Beautifully formatted answer */}
+          <TabsContent value="result" className="mt-4">
+            {sections.length > 0 && sections[0].content ? (
+              <div className="space-y-6">
+                {sections.map((section, idx) => (
+                  <div key={idx}>
+                    {sections.length > 1 && (
+                      <h3 className="text-lg font-semibold mb-2 text-gray-800 border-b pb-1">{section.title}</h3>
+                    )}
+                    <div className="prose prose-sm max-w-none text-gray-700 bg-gray-50 p-4 rounded-lg shadow-sm">
+                      <ReactMarkdown>{preprocessBullets(section.content, section.title)}</ReactMarkdown>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-500 italic">No results available. Try a different PDF or research topic.</div>
+            )}
+            {/* Debug: Raw JSON */}
+            <details className="mt-6">
+              <summary className="cursor-pointer text-xs text-gray-400">Show Raw JSON</summary>
+              <pre className="text-xs bg-gray-100 p-2 rounded overflow-x-auto mt-2">{JSON.stringify(result, null, 2)}</pre>
+            </details>
+          </TabsContent>
+
+          {/* Web Search Summary */}
+          <TabsContent value="web" className="mt-4">
+            <div className="whitespace-pre-line break-words prose max-w-none text-gray-700 bg-gray-50 p-4 rounded-lg shadow-sm">
+              <ReactMarkdown>{webSummary || "No web search performed yet."}</ReactMarkdown>
+            </div>
+          </TabsContent>
+
+          {/* Web Search Sources */}
+          <TabsContent value="sources" className="mt-4">
+            {webSources.length > 0 ? (
+              <ul className="space-y-4">
+                {webSources.map((source, idx) => (
+                  <li key={idx} className="border rounded-lg p-4 shadow-sm bg-white">
+                    <div className="font-semibold mb-2 text-gray-800">{source.title || "Untitled"}</div>
+                    <div className="text-sm mb-2 text-gray-700">{source.body || "No description available."}</div>
+                    {source.page_image && (
+                      <div className="mt-2 mb-2">
+                        <img
+                          src={source.page_image}
+                          alt={`Page ${source.page_number || idx + 1}`}
+                          className="max-w-full h-auto rounded-lg shadow-sm"
+                        />
+                        {source.page_number && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Page {source.page_number}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {source.href && (
+                      <a
+                        href={source.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline text-sm inline-flex items-center gap-1"
+                      >
+                        Visit Source
+                      </a>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 italic">No sources found.</p>
+            )}
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
+  );
+} 

@@ -4,21 +4,15 @@ import { useState } from "react";
 import { ResearchForm } from "@/components/research-form";
 import { ResearchResults } from "@/components/research-results";
 
-interface ResearchData {
-  summary: string;
-  sources: string[];
-  process: string[];
-}
-
 export default function Home() {
-  const [researchData, setResearchData] = useState<ResearchData>({
-    summary: "",
-    sources: [],
-    process: [],
-  });
+  const [result, setResult] = useState("");
+  const [webSummary, setWebSummary] = useState("");
+  const [webSources, setWebSources] = useState<any[]>([]);
 
-  const handleResearchComplete = (results: ResearchData) => {
-    setResearchData(results);
+  const handleResearchComplete = (results: { result: string; webSummary?: string; webSources?: any[] }) => {
+    setResult(results.result);
+    setWebSummary(results.webSummary || "");
+    setWebSources(results.webSources || []);
   };
 
   return (
@@ -31,7 +25,7 @@ export default function Home() {
           </p>
         </div>
         <ResearchForm onResearchComplete={handleResearchComplete} />
-        <ResearchResults {...researchData} />
+        <ResearchResults result={result} webSummary={webSummary} webSources={webSources} />
       </div>
     </div>
   );
