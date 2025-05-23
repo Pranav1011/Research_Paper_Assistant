@@ -1,7 +1,7 @@
 import base64
 from colivara_py import ColiVara
 
-api_key = "936ekxZL3udPVApOA4jvGnkrGnO8b1QO"
+api_key = "your-api-key"
 pdf_path = "/Users/saipranavkrovvidi/Desktop/Machine-Learning-Algorithms-A-Review.pdf"  # or your actual file path
 collection_name = "default_collection"
 query = "How does the paper describe the concept and process of the k-nearest neighbors (KNN) algorithm, and what are its limitations in practical machine learning applications?"
