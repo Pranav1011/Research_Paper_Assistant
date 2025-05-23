@@ -47,7 +47,7 @@ pip install -r requirements.txt
 3. **Set up your Google API key**
 
 - Get a [Google AI Studio API key](https://aistudio.google.com/app/apikey)
-- Create a `.env` file:
+- Create a `.env` file in /backend/:
 
 ```
 GOOGLE_API_KEY=your-google-api-key-here
