@@ -60,7 +60,7 @@ function preprocessBullets(text: string, sectionTitle: string) {
         .filter(Boolean)
         .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
         .join("\n");
-    }
+  }
     // Try splitting on newlines
     if (text.includes("\n")) {
       return text
@@ -69,7 +69,7 @@ function preprocessBullets(text: string, sectionTitle: string) {
         .filter(Boolean)
         .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
         .join("\n");
-    }
+          }
     // Try splitting on periods (for sentences)
     if (text.includes(". ")) {
       return text
@@ -88,11 +88,11 @@ function preprocessBullets(text: string, sectionTitle: string) {
         .filter(Boolean)
         .map(line => (line.startsWith("- ") || line.startsWith("* ")) ? line : `- ${line}`)
         .join("\n");
-    }
+          }
   }
   // For other sections, return as is
   return text;
-}
+  }
 
 export function ResearchResults({ result, webSummary = "", webSources = [] }: ResearchResultsProps) {
   // Try to extract and format the answer
@@ -129,8 +129,8 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
                     )}
                     <div className="prose prose-sm max-w-none bg-zinc-800 text-zinc-200 p-4 rounded-lg shadow-sm dark:text-zinc-200">
                       <ReactMarkdown>{preprocessBullets(section.content, section.title)}</ReactMarkdown>
-                    </div>
-                  </div>
+              </div>
+              </div>
                 ))}
               </div>
             ) : (
@@ -147,7 +147,7 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
           <TabsContent value="web" className="mt-4">
             <div className="whitespace-pre-line break-words prose max-w-none bg-zinc-800 text-zinc-200 p-4 rounded-lg shadow-sm dark:text-zinc-200">
               <ReactMarkdown>{webSummary || "No web search performed yet."}</ReactMarkdown>
-            </div>
+              </div>
           </TabsContent>
 
           {/* Web Search Sources */}
@@ -187,8 +187,8 @@ export function ResearchResults({ result, webSummary = "", webSources = [] }: Re
               </ul>
             ) : (
               <p className="text-zinc-400 italic">No sources found.</p>
-            )}
-          </TabsContent>
+    )}
+    </TabsContent>
         </Tabs>
       </CardContent>
     </Card>

@@ -37,7 +37,7 @@ cd deep-researcher-ts/backend
 ```
 
 2. **Backend setup**
-   - See [`backend/README.md`](backend/README.md) for full backend instructions.
+   - See [`backend/README.md`](README.md) for full backend instructions.
    - Requires Python, FastAPI, and a Google API key for Gemini 2.0 Flash.
 
 ```bash
@@ -57,6 +57,12 @@ GOOGLE_API_KEY=your-google-api-key-here
 
 ```bash
 uvicorn app.main:app --reload
+```
+
+5. **Run the Front end**
+
+```bash
+npm run dev
 ```
 
 ---
