@@ -22,35 +22,27 @@ import base64
 import google.generativeai as genai
 from PyPDF2 import PdfReader
 import io
+import pypdfium2
 
 # === More local LLMs you can use with Ollama/LMStudio (no API needed) ===
 # - llama2, llama3, mistral, phi3, deepseek-llm, deepseek-coder, qwen1.5, qwen2, gemma, codellama, yi, solar, openhermes, neural-chat, etc.
 # See https://ollama.com/library for more.
 
-# Load environment variables
-load_dotenv()
+load_dotenv(override=True) #Loading the env file from backend directory
 
 app = FastAPI()
 
-# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Your Next.js frontend URL
+    allow_origins=["http://localhost:3000"],  # Next.js frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Always use Gemini 2.0 Flash
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-2.0-flash')
-
-# Preserve ColiVara code as comments for future use
-"""
-from colivara_py import ColiVara
-colivara_client = ColiVara(api_key=os.getenv("COLIVARA_API_KEY"))
-"""
 
 class ResearchRequest(BaseModel):
     query: str
@@ -70,16 +62,12 @@ async def research(
         if not file:
             raise HTTPException(status_code=400, detail="PDF file is required for research.")
         
-        # Save the uploaded file
-        file_location = f"temp_{file.filename}"
-        with open(file_location, "wb") as file_object:
-            file_object.write(await file.read())
-
-        # Read PDF content
-        pdf_reader = PdfReader(file_location)
+        # Read PDF content directly from memory
+        pdf_bytes = await file.read()
+        pdf_document = pypdfium2.PdfDocument(pdf_bytes)
         pdf_text = ""
-        for page in pdf_reader.pages:
-            pdf_text += page.extract_text()
+        for page in pdf_document:
+            pdf_text += page.get_textpage().get_text_range()
 
         # Create prompt
         prompt = f"""Please analyze the following PDF content and answer the query: {query}
@@ -107,12 +95,6 @@ Format your response in a clear, structured way."""
             "page_number": "1"
         }]
 
-        # Clean up
-        try:
-            os.remove(file_location)
-        except Exception as e:
-            print(f"Warning: could not delete temp file {file_location}: {e}")
-
         return ResearchResponse(
             summary=summary,
             sources=sources,
@@ -122,77 +104,7 @@ Format your response in a clear, structured way."""
     except Exception as e:
         print(f"Error in research endpoint: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
-# Preserve ColiVara implementation as comments
-"""
-@app.post("/api/research", response_model=ResearchResponse)
-async def research(
-    query: str = Form(...),
-    file: Optional[UploadFile] = File(None)
-):
-    try:
-        if not file:
-            raise HTTPException(status_code=400, detail="PDF file is required for ColiVara research.")
-        # Save the uploaded file
-        file_location = f"temp_{file.filename}"
-        with open(file_location, "wb") as file_object:
-            file_object.write(await file.read())
-
-        # Now open and read for base64 encoding
-        with open(file_location, "rb") as f:
-            file_content = f.read()
-            encoded_content = base64.b64encode(file_content).decode("utf-8")
-
-        document = colivara_client.upsert_document(
-            name=file.filename,
-            document_base64=encoded_content,
-            collection_name="default_collection",
-            wait=True
-        )
-        try:
-            search_response = colivara_client.search(
-                query,
-                collection_name="default_collection",
-                top_k=5
-            )
-            print("Raw search response:", search_response)
-            results = getattr(search_response, "results", None)
-            if results is None:
-                raise Exception("ColiVara search did not return a .results attribute")
-            print("Results type:", type(results))
-            if results:
-                print("First result type:", type(results[0]))
-                print("First result dir:", dir(results[0]))
-                print("First result dict:", getattr(results[0], '__dict__', None))
-                print("First result repr:", repr(results[0]))
-            context = "\n".join([getattr(r, "text", "") for r in results])
-            sources = []
-            for r in results:
-                source = {
-                    "title": getattr(r, "title", ""),
-                    "href": getattr(r, "url", ""),
-                    "body": getattr(r, "text", ""),
-                    "page_image": getattr(r, "img_base64", ""),
-                    "page_number": getattr(r, "page_number", "")
-                }
-                sources.append(source)
-        except Exception as e:
-            print(f"ColiVara error: {e}")
-            raise HTTPException(status_code=502, detail="ColiVara server error. Please try again later or contact support.")
-        # Only delete after all operations are done
-        try:
-            os.remove(file_location)
-        except Exception as e:
-            print(f"Warning: could not delete temp file {file_location}: {e}")
-        return ResearchResponse(
-            summary=context,
-            sources=sources,
-            process="Research conducted using ColiVara's advanced document analysis capabilities."
-        )
-    except Exception as e:
-        print(f"Error in research endpoint: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-"""
+    
 
 def duckduckgo_search_sync(query: str, max_results: int = 3) -> list:
     results = []
@@ -302,7 +214,7 @@ async def websearch(payload: dict):
         web_results = await loop.run_in_executor(pool, duckduckgo_search_sync, query)
     context = "\n".join([f"{r['title']}: {r['body']} ({r['href']})" for r in web_results])
     prompt = create_prompt(query, context)
-    result = await llm.ainvoke(prompt)
+    result = await llm.ainvoke(prompt) #Why we using langchain if you are just gonna use ainvoke without a prompt template?
     result_text = result.content if hasattr(result, "content") else str(result)
     summary, process, _ = extract_sections(result_text)
     return {

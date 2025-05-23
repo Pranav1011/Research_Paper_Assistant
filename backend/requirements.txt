@@ -7,4 +7,6 @@ httpx==0.26.0
 langchain==0.1.9
 langchain-community==0.0.38
 google-generativeai==0.8.5
-PyPDF2==3.0.1 
+PyPDF2==3.0.1
+pypdfium2==4.27.0
+duckduckgo-search==3.0.0
